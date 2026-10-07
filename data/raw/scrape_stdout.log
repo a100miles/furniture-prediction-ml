@@ -1,0 +1,52 @@
+9019 products in sitemap, 6534 candidates, 0 already saved, 6534 to fetch
+9019 products in sitemap, 6000 candidates, 21 already saved, 5979 to fetch
+100/5979 ok=100 failed=0
+200/5979 ok=200 failed=0
+300/5979 ok=300 failed=0
+400/5979 ok=400 failed=0
+9019 products in sitemap, 6000 candidates, 4630 after cap, 433 already saved, 4197 to fetch (cap 700 per type)
+100/4197 ok=100 failed=0
+200/4197 ok=200 failed=0
+300/4197 ok=300 failed=0
+400/4197 ok=400 failed=0
+500/4197 ok=500 failed=0
+600/4197 ok=600 failed=0
+700/4197 ok=700 failed=0
+800/4197 ok=800 failed=0
+900/4197 ok=900 failed=0
+1000/4197 ok=1000 failed=0
+1100/4197 ok=1100 failed=0
+1200/4197 ok=1200 failed=0
+1300/4197 ok=1300 failed=0
+1400/4197 ok=1400 failed=0
+1500/4197 ok=1500 failed=0
+1600/4197 ok=1600 failed=0
+1700/4197 ok=1700 failed=0
+1800/4197 ok=1800 failed=0
+1900/4197 ok=1900 failed=0
+2000/4197 ok=2000 failed=0
+2100/4197 ok=2100 failed=0
+2200/4197 ok=2200 failed=0
+2300/4197 ok=2300 failed=0
+2400/4197 ok=2400 failed=0
+2500/4197 ok=2500 failed=0
+2600/4197 ok=2600 failed=0
+2700/4197 ok=2700 failed=0
+2800/4197 ok=2800 failed=0
+2900/4197 ok=2900 failed=0
+3000/4197 ok=3000 failed=0
+3100/4197 ok=3100 failed=0
+3200/4197 ok=3200 failed=0
+3300/4197 ok=3300 failed=0
+3400/4197 ok=3400 failed=0
+3500/4197 ok=3500 failed=0
+3600/4197 ok=3600 failed=0
+3700/4197 ok=3700 failed=0
+3800/4197 ok=3800 failed=0
+3900/4197 ok=3900 failed=0
+4000/4197 ok=4000 failed=0
+4100/4197 ok=4100 failed=0
+done: ok=4197 failed=0
+520 saved pages with incomplete sizes
+refetched 520, 353 now have all three sizes
+9017 products in sitemap, 6000 candidates, 4830 after cap, 4630 already saved, 200 to fetch (cap 800 per type)
