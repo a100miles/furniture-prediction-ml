@@ -14,6 +14,7 @@ Course project, Direction 21 "Furniture" (classification).
 | `data/raw/mebel_raw.jsonl` | Raw data: one JSON object per product page, with the collection timestamp. |
 | `data/raw/collection_log.json` | Collection date, counts and politeness settings. |
 | `data/processed/furniture.csv` | The table the notebook uses. |
+| `data/processed/test_urls.csv` | The 793 test listings of the fixed split (seed 42), reused at the Endterm and the Final. |
 | `DATA_CARD.md` | Data card: source, what one row is, every field, how it was collected and checked. |
 | `CONTRIBUTIONS.md` | Who did what, and which AI tools were used for what. |
 | `week3-4/` | Course demo notebooks the modelling follows. |
