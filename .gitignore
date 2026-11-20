@@ -6,3 +6,7 @@ __pycache__/
 data/external/
 data/cache/
 *.zip
+frontend/node_modules/
+.impeccable/review/
+tmp/
+*.tsbuildinfo
