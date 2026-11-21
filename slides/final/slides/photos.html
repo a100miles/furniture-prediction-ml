@@ -1,0 +1,15 @@
+<section id="photos" class="dark">
+<div class="head">
+<p class="eyebrow">Photos, on a second marketplace</p>
+<h2>Where the sizes fail, a pretrained photo model helps</h2>
+</div>
+<div class="cards four">
+<div class="card" style="--i: 0;"><p class="num" style="font-size: 80px;">0.662</p><p class="cap">specifications only</p></div>
+<div class="card" style="--i: 1;"><p class="num" style="font-size: 80px;">0.605</p><p class="cap">small CNN trained from scratch</p></div>
+<div class="card" style="--i: 2;"><p class="num" style="font-size: 80px;">0.766</p><p class="cap">frozen ResNet-18 + logistic regression</p></div>
+<div class="card" style="--i: 3;"><p class="num" style="font-size: 80px;">0.794</p><p class="cap">specs + photo</p></div>
+</div>
+<p class="lead" style="width: 1560px;">Type macro-F1, grouped 5-fold CV on 3,332 Amazon (ABO) listings. TV-stand recall rises from 0.08 to 0.64 with the photo. These are other products and they have no price, so this tests the Endterm photo hypothesis, not the price.</p>
+<div class="foot"><p>final.ipynb, section 5 · photos: Amazon.com, CC BY 4.0</p><p class="pg"></p></div>
+<aside>Tamerlan (about 45 seconds). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662, and TV stands go from almost never found to mostly found. Our own small CNN, trained from scratch on about 2,700 products, underfits at 0.605. This is on other products, without price.</aside>
+</section>

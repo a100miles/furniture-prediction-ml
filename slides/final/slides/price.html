@@ -1,0 +1,17 @@
+<section id="price">
+<div class="head">
+<p class="eyebrow">Price: same listings, same 793 test listings</p>
+<h2>The name lowers the error a little; our own features beat the pretrained ones</h2>
+</div>
+<div style="display: flex; flex-direction: column; gap: 18px;">
+<div class="bar-row" style="--i: 0;"><p class="bar-label">Median price of the type</p><div class="bar" style="width: 760px;"></div><p class="bar-val">94,800</p></div>
+<div class="bar-row" style="--i: 1;"><p class="bar-label">Name only (TF-IDF, ridge)</p><div class="bar" style="width: 680px;"></div><p class="bar-val">84,900</p></div>
+<div class="bar-row" style="--i: 2;"><p class="bar-label">Specs, ridge</p><div class="bar" style="width: 518px;"></div><p class="bar-val">64,700</p></div>
+<div class="bar-row" style="--i: 3;"><p class="bar-label">Specs, random forest (best specs)</p><div class="bar" style="width: 492px;"></div><p class="bar-val">61,400 · test 54,300</p></div>
+<div class="bar-row" style="--i: 4;"><p class="bar-label">Specs + name, pretrained e5, SVR</p><div class="bar pre" style="width: 482px;"></div><p class="bar-val">60,200 · test 54,200</p></div>
+<div class="bar-row" style="--i: 5;"><p class="bar-label"><b>Specs + name, own TF-IDF, SVR</b></p><div class="bar best" style="width: 473px;"></div><p class="bar-val">59,100 · test 51,700</p></div>
+</div>
+<p class="body" style="width: 1600px;">Grouped 5-fold CV mean absolute error in tenge (bars); test MAE once at the end. Chosen model: test MAPE <b>20.6%</b> vs 22.1% for specs only. Names are short and full of shop words and sizes; character pieces catch them, a general sentence encoder does not.</p>
+<div class="foot"><p>final.ipynb, section 7 · median price 229,600 KZT</p><p class="pg"></p></div>
+<aside>Sultanbek (about 1 minute 45 seconds). Same 3,961 listings, same 793 test listings, same groups. The median price of the type gives an error of 95 thousand tenge. Specifications bring it to about 61 thousand: a random forest, boosting, SVR and ridge are all within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained multilingual e5 encoder adds less than our own features: names are short and full of shop-specific words like fabric names and sizes, which character pieces catch directly.</aside>
+</section>

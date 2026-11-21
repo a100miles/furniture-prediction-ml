@@ -1,0 +1,22 @@
+<section id="check">
+<div class="head">
+<p class="eyebrow">Is the gain real?</p>
+<h2>Small, but it survives both checks</h2>
+</div>
+<div class="cards two">
+<div class="card" style="--i: 0;">
+<h3>Leakage: mask the design name</h3>
+<p class="cap">“Диван прямой <b>Линс</b> Велюр Голубой” → “Диван прямой <b>модель</b> Велюр Голубой”</p>
+<p class="num" style="font-size: 80px;">75%</p>
+<p class="cap">of the gain stays (2,366 → 1,767 KZT in CV). The model reads fabric and function words, not design price tags.</p>
+</div>
+<div class="card" style="--i: 1;">
+<h3>Run-to-run: six other fold cuts</h3>
+<p class="cap">Same settings, folds cut with seeds 0–4 and 42</p>
+<p class="num" style="font-size: 80px;">6 of 6</p>
+<p class="cap">cuts favour the name model, by 2,400–4,100 KZT. Specs only 61,489 ± 550; with name 58,340 ± 412. Type SVM: 0.948 ± 0.003.</p>
+</div>
+</div>
+<div class="foot"><p>final.ipynb, sections 7.1 and 7.2</p><p class="pg"></p></div>
+<aside>Tamerlan (about 45 seconds). Two checks. First leakage: the name contains the design’s own name, which could give away its price. Our groups keep a design on one side of every split, and on top we masked the design name: three quarters of the gain stays. Second, run-to-run variation: with five other fold cuts, the name model wins in all six, by 2.4 to 4.1 thousand tenge. The gain is small, about 4 to 6 percent of the error, but it is not an accident of one split.</aside>
+</section>

@@ -1,0 +1,21 @@
+<section id="data">
+<div class="head">
+<p class="eyebrow">Data, rights and the split</p>
+<h2>Only sources we may use, matched to the same listings</h2>
+</div>
+<table>
+<tr><th style="width: 30%;">Source</th><th style="width: 16%;">Used?</th><th style="width: 54%;">Why, and how it is matched</th></tr>
+<tr><td>mebel.kz specifications</td><td>yes</td><td>Extracted facts; one row per listing URL</td></tr>
+<tr class="hl"><td>mebel.kz product names</td><td>yes, for price</td><td>Short factual label, same row; all 3,961 have one</td></tr>
+<tr><td>mebel.kz descriptions, photos</td><td>no</td><td>Copyright notice forbids reuse without consent</td></tr>
+<tr><td>Amazon Berkeley Objects</td><td>yes, for type</td><td>CC BY 4.0; other products, no price</td></tr>
+</table>
+<div class="cards four">
+<div class="card" style="--i: 0; padding: 28px;"><p class="num" style="font-size: 64px;">793</p><p class="cap">test listings, fixed since the Midterm</p></div>
+<div class="card" style="--i: 1; padding: 28px;"><p class="num" style="font-size: 64px;">92</p><p class="cap">designs among them</p></div>
+<div class="card" style="--i: 2; padding: 28px;"><p class="num" style="font-size: 64px;">2,971</p><p class="cap">training listings, 315 groups</p></div>
+<div class="card" style="--i: 3; padding: 28px;"><p class="num" style="font-size: 64px;">42</p><p class="cap">seed for every random step</p></div>
+</div>
+<div class="foot"><p>DATA_CARD.md; final.ipynb, section 3</p><p class="pg"></p></div>
+<aside>Tamerlan (about 1 minute). The store’s copyright notice covers photos and page text, so we use neither. Product names are short factual labels, like the sizes, and they belong to exactly the same listings, so they give us a second source on the same test objects. Amazon Berkeley Objects is CC BY 4.0, but it is other products without price, so we use it only for the type. The split is the same as since the Midterm: 793 test listings, 92 designs, groups keep colour variants together, seed 42.</aside>
+</section>

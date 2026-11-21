@@ -14,7 +14,7 @@ INCLUDE_FILES = ["final.ipynb", "endterm.ipynb", "furniture_classification.ipynb
                  "api.py", "app.py", "requirements.txt", "README.md", "CHANGES.md", "DATA_CARD.md", "CONTRIBUTIONS.md",
                  "Furniture Type Midterm Slides.pdf", "Furniture Type Endterm Slides.pdf", "Furniture Final Slides.pdf",
                  ".gitignore"]
-INCLUDE_DIRS = ["furniture", "tools", "scraper", "models", "data/processed", "data/raw", "week3-4", "frontend"]
+INCLUDE_DIRS = ["furniture", "tools", "scraper", "models", "data/processed", "data/raw", "week3-4", "frontend", "slides"]
 SKIP_PARTS = {"__pycache__", "node_modules", ".ipynb_checkpoints"}
 SKIP_SUFFIX = {".pyc", ".tsbuildinfo"}
 
