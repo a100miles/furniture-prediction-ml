@@ -1,14 +1,18 @@
 import { ChangeEvent, CSSProperties, DragEvent, FormEvent, useEffect, useMemo, useState } from 'react'
-import { AlertCircle, ArrowRight, Check, ImagePlus, LoaderCircle, RotateCcw, Ruler, Upload, X } from 'lucide-react'
+import { AlertCircle, ArrowRight, Check, ImagePlus, LoaderCircle, RotateCcw, Ruler, Tag, Upload, X } from 'lucide-react'
 import { Magnetic, useSpring } from './fx'
 import { MaskedLines, Reveal } from './reveal'
 
 export type ModelStatus = 'checking' | 'ready' | 'unavailable'
-type Mode = 'specs' | 'photo'
+type Mode = 'specs' | 'photo' | 'price'
 type NumericKey = 'width_cm' | 'depth_cm' | 'height_cm' | 'price_kzt' | 'weight_kg'
-type FormState = Record<NumericKey, string> & { materials: string[]; main_color: string }
+type FormState = Record<NumericKey, string> & { materials: string[]; main_color: string; furniture_type: string; name: string }
 type Probability = { type: string; probability: number }
 type Prediction = { prediction: string; confidence: number; probabilities: Probability[]; source: string; model: string; cv_macro_f1: number }
+type PriceEstimate = { price_kzt: number; low_kzt: number; high_kzt: number; model: string; cv_mae_kzt: number; cv_mape: number }
+type PriceResult = { specs_only: PriceEstimate; with_name: PriceEstimate | null }
+const TYPES = ['sofa', 'armchair', 'chair', 'bed', 'wardrobe', 'chest_of_drawers', 'desk', 'coffee_table', 'tv_stand']
+const MAX_NAME = 200
 
 /* Row-major positions in the generated 4 × 4 material texture atlas. */
 const MATERIALS = [
@@ -34,11 +38,12 @@ const LIMITS: Record<NumericKey, { min: number; max: number; slideMax: number; l
 }
 /** Values copied from typical real mebel.kz listings of each type. */
 const EXAMPLES: { name: string; values: Partial<FormState> }[] = [
-  { name: 'Chest of drawers', values: { width_cm: '105', depth_cm: '42', height_cm: '80', price_kzt: '114770', weight_kg: '40', materials: ['chipboard', 'solid_wood'], main_color: 'white' } },
-  { name: 'Sofa', values: { width_cm: '220', depth_cm: '94', height_cm: '93', price_kzt: '421010', weight_kg: '70', materials: ['chipboard', 'fibreboard', 'plywood', 'solid_wood', 'spring'], main_color: 'grey' } },
-  { name: 'Wardrobe', values: { width_cm: '160', depth_cm: '60', height_cm: '220', price_kzt: '280000', weight_kg: '110', materials: ['chipboard', 'mirror'], main_color: 'beige' } },
+  { name: 'Chest of drawers', values: { width_cm: '105', depth_cm: '42', height_cm: '80', price_kzt: '114770', weight_kg: '40', materials: ['chipboard', 'solid_wood'], main_color: 'white', furniture_type: 'chest_of_drawers', name: 'Комод Белый' } },
+  { name: 'Sofa', values: { width_cm: '220', depth_cm: '94', height_cm: '93', price_kzt: '421010', weight_kg: '70', materials: ['chipboard', 'fibreboard', 'plywood', 'solid_wood', 'spring'], main_color: 'grey', furniture_type: 'sofa', name: 'Диван прямой Велюр Серый' } },
+  { name: 'Wardrobe', values: { width_cm: '160', depth_cm: '60', height_cm: '220', price_kzt: '280000', weight_kg: '110', materials: ['chipboard', 'mirror'], main_color: 'beige', furniture_type: 'wardrobe', name: 'Шкаф-купе 2-160x220 Бежевый' } },
 ]
-const INITIAL: FormState = { width_cm: '120', depth_cm: '45', height_cm: '75', price_kzt: '150000', weight_kg: '40', materials: ['chipboard'], main_color: 'white' }
+const INITIAL: FormState = { width_cm: '120', depth_cm: '45', height_cm: '75', price_kzt: '150000', weight_kg: '40', materials: ['chipboard'], main_color: 'white', furniture_type: 'desk', name: '' }
+const TITLES: Record<Mode, string[]> = { specs: ['What kind of', 'furniture is it?'], photo: ['What kind of', 'furniture is it?'], price: ['What should', 'it cost?'] }
 const LABELS: Record<string, string> = { solid_wood: 'Solid wood', light_blue: 'Light blue', tv_stand: 'TV stand', mdf: 'MDF', chest_of_drawers: 'Chest of drawers', coffee_table: 'Coffee table' }
 const MAX_PHOTO = 10 * 1024 * 1024
 
@@ -163,6 +168,33 @@ function ResultView({ result }: { result: Prediction }) {
   )
 }
 
+const kzt = (v: number) => `${Math.round(v).toLocaleString('en').replaceAll(',', '\u00a0')}\u00a0₸`
+
+function PriceView({ result }: { result: PriceResult }) {
+  const main = result.with_name ?? result.specs_only
+  const digits = kzt(main.price_kzt)
+  return (
+    <div className="result" aria-live="polite">
+      <div className="result-top">
+        <div>
+          <p className="eyebrow light">Expected price at mebel.kz</p>
+          <h2 className="result-name" aria-label={digits}>
+            {[...digits].map((ch, i) => <span key={i} style={{ '--i': i } as CSSProperties} aria-hidden="true">{ch}</span>)}
+          </h2>
+        </div>
+      </div>
+      <p className="note">In cross-validation, 8 in 10 listings were priced between {Math.round(100 * main.low_kzt / main.price_kzt)}% and {Math.round(100 * main.high_kzt / main.price_kzt)}% of the predicted price: here <b>{kzt(main.low_kzt)}</b> to <b>{kzt(main.high_kzt)}</b>.</p>
+      <dl className="facts">
+        {result.with_name && <div><dt>Specifications only</dt><dd>{kzt(result.specs_only.price_kzt)}</dd></div>}
+        {result.with_name && <div><dt>The name changed it by</dt><dd>{(100 * (result.with_name.price_kzt / result.specs_only.price_kzt - 1)).toFixed(0)}%</dd></div>}
+        <div><dt>Grouped CV error</dt><dd>{kzt(main.cv_mae_kzt)} MAE · {(main.cv_mape * 100).toFixed(0)}% MAPE</dd></div>
+        <div><dt>Model</dt><dd>{main.model}</dd></div>
+      </dl>
+      <p className="fine">Trained on one store (mebel.kz, Almaty) with prices from one day in October 2026. The name adds fabric and mechanism words that the specifications do not record.</p>
+    </div>
+  )
+}
+
 /* ---------- Page ---------- */
 export default function PredictPage({ status }: { status: ModelStatus }) {
   const [backgroundReady, setBackgroundReady] = useState(false)
@@ -173,21 +205,23 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
   const [photo, setPhoto] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
   const [result, setResult] = useState<Prediction | null>(null)
+  const [priceResult, setPriceResult] = useState<PriceResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : ''), [photo])
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
 
-  const needsSpecs = mode === 'specs' || useSpecs
-  const fields: NumericKey[] = mode === 'specs' ? ['width_cm', 'depth_cm', 'height_cm', 'price_kzt'] : ['width_cm', 'depth_cm', 'height_cm', 'weight_kg']
+  const needsSpecs = mode !== 'photo' || useSpecs
+  const fields: NumericKey[] = mode === 'specs' ? ['width_cm', 'depth_cm', 'height_cm', 'price_kzt'] : mode === 'price' ? ['width_cm', 'depth_cm', 'height_cm'] : ['width_cm', 'depth_cm', 'height_cm', 'weight_kg']
   const errors = Object.fromEntries(fields.map((k) => [k, checkNumber(k, form[k])])) as Record<NumericKey, string>
-  const specsValid = !needsSpecs || fields.every((k) => !errors[k])
+  const nameError = form.name.trim().length > MAX_NAME ? `The name must be at most ${MAX_NAME} characters.` : ''
+  const specsValid = (!needsSpecs || fields.every((k) => !errors[k])) && (mode !== 'price' || !nameError)
 
-  const clear = () => { setResult(null); setError('') }
+  const clear = () => { setResult(null); setPriceResult(null); setError('') }
   const changeMode = (next: Mode) => { setMode(next); setTouched(false); clear() }
-  const setNumber = (k: NumericKey, v: string) => { setForm((c) => ({ ...c, [k]: v })); setTouched(true); setResult(null) }
-  const toggleMaterial = (m: string) => { setForm((c) => ({ ...c, materials: c.materials.includes(m) ? c.materials.filter((x) => x !== m) : [...c.materials, m] })); setResult(null) }
+  const setNumber = (k: NumericKey, v: string) => { setForm((c) => ({ ...c, [k]: v })); setTouched(true); setResult(null); setPriceResult(null) }
+  const toggleMaterial = (m: string) => { setForm((c) => ({ ...c, materials: c.materials.includes(m) ? c.materials.filter((x) => x !== m) : [...c.materials, m] })); setResult(null); setPriceResult(null) }
   const applyExample = (values: Partial<FormState>) => { setForm((c) => ({ ...c, ...values })); setTouched(false); clear() }
   const resetAll = () => { setForm(INITIAL); setPhoto(null); setUseSpecs(false); setTouched(false); clear() }
 
@@ -206,10 +240,18 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
     setTouched(true)
     if (!specsValid) { setError('Fix the highlighted fields first.'); return }
     if (mode === 'photo' && !photo) { setError('Choose a furniture photo before running the model.'); return }
-    setLoading(true); setError(''); setResult(null)
+    setLoading(true); setError(''); setResult(null); setPriceResult(null)
     try {
       let response: Response
-      if (mode === 'specs') {
+      if (mode === 'price') {
+        response = await fetch('/api/predict/price', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            width_cm: Number(form.width_cm), depth_cm: Number(form.depth_cm), height_cm: Number(form.height_cm),
+            furniture_type: form.furniture_type, name: form.name.trim(), materials: form.materials, main_color: form.main_color,
+          }),
+        })
+      } else if (mode === 'specs') {
         response = await fetch('/api/predict/specs', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -230,7 +272,8 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
       }
       const body = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(body.error || `The model server answered with status ${response.status}.`)
-      setResult(body)
+      if (mode === 'price') setPriceResult(body)
+      else setResult(body)
     } catch (problem) {
       setError(problem instanceof TypeError
         ? 'The model server is not reachable. Start it with `python api.py` and reload this page.'
@@ -257,11 +300,12 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
 
       <header className="pp-head">
         <Reveal delay={60}><p className="eyebrow light">Predict</p></Reveal>
-        <MaskedLines as="h1" lines={['What kind of', 'furniture is it?']} className="pp-title" start={120} immediate />
+        <MaskedLines key={mode === 'price' ? 'price' : 'type'} as="h1" lines={TITLES[mode]} className="pp-title" start={120} immediate />
         <Reveal delay={420}>
           <div className="modes" role="tablist" aria-label="Prediction input">
             <button type="button" role="tab" aria-selected={mode === 'specs'} className={mode === 'specs' ? 'on' : ''} onClick={() => changeMode('specs')}><Ruler size={16} /> From specifications</button>
             <button type="button" role="tab" aria-selected={mode === 'photo'} className={mode === 'photo' ? 'on' : ''} onClick={() => changeMode('photo')}><ImagePlus size={16} /> From a photo</button>
+            <button type="button" role="tab" aria-selected={mode === 'price'} className={mode === 'price' ? 'on' : ''} onClick={() => changeMode('price')}><Tag size={16} /> Price</button>
             <span className="modes-thumb" data-pos={mode} aria-hidden="true" />
           </div>
         </Reveal>
@@ -272,7 +316,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
 
       <form className="workbench" onSubmit={submit} noValidate>
         <Reveal delay={520} className="bench" key={mode}>
-          {mode === 'specs' && (
+          {mode !== 'photo' && (
             <div className="presets">
               <span className="eyebrow light">Load a real listing</span>
               <div>{EXAMPLES.map((ex) => <button type="button" key={ex.name} onClick={() => applyExample(ex.values)}>{ex.name}</button>)}</div>
@@ -299,11 +343,33 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
                 </label>
               )}
               <label className="switch-row">
-                <span><strong>Add specifications</strong><small>Photo + sizes scored 0.794 vs 0.771 for the photo alone.</small></span>
+                <span><strong>Add specifications</strong><small>Photo + sizes scored 0.794 vs 0.766 for the photo alone.</small></span>
                 <input type="checkbox" checked={useSpecs} onChange={(e) => { setUseSpecs(e.target.checked); clear() }} />
                 <i aria-hidden="true" />
               </label>
             </section>
+          )}
+
+          {mode === 'price' && (
+            <>
+              <section className="step">
+                <header><span className="step-no">{num()}</span><h3>Type</h3><p>{pretty(form.furniture_type)}</p></header>
+                <div className="chips" role="radiogroup" aria-label="Furniture type">
+                  {TYPES.map((t) => (
+                    <button type="button" key={t} role="radio" aria-checked={form.furniture_type === t} className={form.furniture_type === t ? 'on' : ''}
+                      onClick={() => { setForm((c) => ({ ...c, furniture_type: t })); setPriceResult(null) }}>{pretty(t)}</button>
+                  ))}
+                </div>
+              </section>
+              <section className="step">
+                <header><span className="step-no">{num()}</span><h3>Product name</h3><p>Optional, in Russian as on mebel.kz: fabric and mechanism words help. Leave it empty to use the specifications only.</p></header>
+                <label className="name-field">
+                  <input type="text" name="name" value={form.name} placeholder="Диван угловой Велюр Серый" aria-label="Product name"
+                    aria-invalid={Boolean(nameError)} onChange={(e) => { setForm((c) => ({ ...c, name: e.target.value })); setPriceResult(null) }} />
+                </label>
+                {nameError && <span className="field-error">{nameError}</span>}
+              </section>
+            </>
           )}
 
           {needsSpecs && (
@@ -317,12 +383,12 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
                 </div>
               </section>
 
-              <section className="step">
+              {mode !== 'price' && <section className="step">
                 <header><span className="step-no">{num()}</span><h3>{mode === 'specs' ? 'Price' : 'Weight'}</h3><p>{mode === 'specs' ? 'The listed price in tenge.' : 'Shipping weight in kilograms.'}</p></header>
                 {mode === 'specs'
                   ? <RulerField field="price_kzt" value={form.price_kzt} error={touched ? errors.price_kzt : ''} onChange={setNumber} />
                   : <RulerField field="weight_kg" value={form.weight_kg} error={touched ? errors.weight_kg : ''} onChange={setNumber} />}
-              </section>
+              </section>}
 
               <section className="step">
                 <header><span className="step-no">{num()}</span><h3>Materials</h3><p>{form.materials.length ? `${form.materials.length} selected` : 'None selected: the model will treat every material as absent.'}</p></header>
@@ -345,7 +411,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
                   {Object.entries(COLOURS).map(([key, paint]) => (
                     <button type="button" key={key} role="radio" aria-checked={form.main_color === key} aria-label={pretty(key)} title={pretty(key)}
                       className={form.main_color === key ? 'on' : ''} style={{ '--paint': paint } as CSSProperties}
-                      onClick={() => { setForm((c) => ({ ...c, main_color: key })); setResult(null) }} />
+                      onClick={() => { setForm((c) => ({ ...c, main_color: key })); setResult(null); setPriceResult(null) }} />
                   ))}
                 </div>
               </section>
@@ -387,8 +453,11 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
                 </div>
               )}
               {!loading && !error && result && <ResultView key={result.prediction + result.confidence} result={result} />}
-              {!loading && !error && !result && (
-                <p className="idle">Set the details on the left and press <b>Predict</b>. The answer appears here with the model's confidence across all nine types.</p>
+              {!loading && !error && priceResult && <PriceView key={JSON.stringify(priceResult)} result={priceResult} />}
+              {!loading && !error && !result && !priceResult && (
+                <p className="idle">{mode === 'price'
+                  ? <>Set the details on the left and press <b>Predict</b>. The answer is an expected price with the range the model usually stays within.</>
+                  : <>Set the details on the left and press <b>Predict</b>. The answer appears here with the model's confidence across all nine types.</>}</p>
               )}
             </div>
           </aside>

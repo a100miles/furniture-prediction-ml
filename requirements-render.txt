@@ -1,0 +1,13 @@
+# Runtime packages for the deployed app (api.py + the built frontend in frontend/dist).
+# Same versions as requirements.txt; CPU-only PyTorch (the +cpu builds come from the PyTorch index).
+--extra-index-url https://download.pytorch.org/whl/cpu
+numpy==2.5.3
+pandas==3.0.6
+scikit-learn==1.9.1
+joblib==1.6.0
+torch==2.15.0+cpu
+torchvision==0.29.2+cpu
+pillow==13.0.0
+starlette==1.10.0
+uvicorn==0.54.0
+python-multipart==0.0.34

@@ -1,0 +1,24 @@
+# Render blueprint: Dashboard -> New -> Blueprint -> this repository.
+# Serves the model API and the built React app (frontend/dist is committed, so no Node build is needed).
+services:
+  - type: web
+    name: furniture-model-studio
+    runtime: python
+    plan: free            # 512 MB; the app needs about 500 MB after a photo prediction
+    region: frankfurt
+    branch: a100miles
+    buildCommand: >-
+      pip install -r requirements-render.txt &&
+      python -c "from torchvision.models import ResNet18_Weights; ResNet18_Weights.IMAGENET1K_V1.get_state_dict(progress=False)"
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.11
+      - key: TORCH_HOME            # ResNet-18 weights are downloaded at build time into the project folder
+        value: /opt/render/project/src/.torch-cache
+      - key: OMP_NUM_THREADS       # one thread and fewer allocator arenas keep memory under 512 MB
+        value: "1"
+      - key: MALLOC_ARENA_MAX
+        value: "2"

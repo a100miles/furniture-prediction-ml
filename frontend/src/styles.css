@@ -417,7 +417,7 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
 .offline { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--error-light); font-size: 14.5px; }
 
 .modes {
-  position: relative; display: inline-grid; grid-template-columns: 1fr 1fr;
+  position: relative; display: inline-grid; grid-template-columns: 1fr 1fr 1fr;
   padding: 5px; border-radius: 999px; background: rgb(246 234 218 / .06);
 }
 .modes button {
@@ -427,12 +427,28 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
 }
 .modes button.on { color: #fff7ee; }
 .modes-thumb {
-  position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); border-radius: 999px;
+  position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / 3); border-radius: 999px;
   background: linear-gradient(135deg, #d97a4a, var(--clay-deep));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .22);
   transition: transform .55s var(--ease);
 }
 .modes-thumb[data-pos='photo'] { transform: translateX(100%); }
+.modes-thumb[data-pos='price'] { transform: translateX(200%); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button {
+  height: 38px; padding: 0 16px; border: 1px solid var(--cream-3); border-radius: 999px; background: none;
+  font: 400 14px/1 var(--ui); color: var(--cream-2); transition: background .3s var(--ease), color .3s var(--ease);
+}
+.chips button:hover { color: var(--cream); }
+.chips button.on { background: rgb(200 105 61 / .35); border-color: transparent; color: #fff7ee; }
+.name-field { display: block; }
+.name-field input {
+  width: 100%; height: 48px; padding: 0 16px; border: 1px solid var(--cream-3); border-radius: 14px;
+  background: rgb(246 234 218 / .04); font: 400 16px/1 var(--ui); color: var(--cream);
+}
+.name-field input::placeholder { color: var(--cream-2); opacity: .6; }
+.name-field input:focus { outline: 2px solid rgb(200 105 61 / .6); outline-offset: 2px; }
+.name-field input[aria-invalid='true'] { border-color: var(--error-light); }
 
 .workbench { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(20px, 3vw, 36px); align-items: start; }
 .bench {
@@ -648,7 +664,7 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
 }
 @media (max-width: 600px) {
   .nav nav a { padding: 7px 8px; font-size: 13px; }
-  .modes button { padding: 0 14px; font-size: 14px; }
+  .modes button { padding: 0 10px; font-size: 13px; gap: 5px; }
   .stage-visual { height: 250px; }
   .odds li { grid-template-columns: 96px 1fr 50px; gap: 10px; }
   .facts { grid-template-columns: 1fr; }
