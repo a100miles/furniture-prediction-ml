@@ -5,21 +5,20 @@ import { MaskedLines, Reveal } from './reveal'
 import { Link } from './router'
 
 const STEPS = [
-  { n: '01', title: 'Specifications', text: 'Width, depth, height, price, materials and colour from 3,961 mebel.kz listings. Colour variants of one design stay on the same side of the split.' },
-  { n: '02', title: 'Photos', text: 'Licensed catalogue photos from Amazon Berkeley Objects. A pretrained ResNet-18 turns each photo into features; a small CNN trained from scratch is the baseline.' },
-  { n: '03', title: 'Fair comparison', text: 'Specs only, photo only and both together are scored on the same objects with grouped cross-validation and macro-F1, then the errors are read one by one.' },
+  { n: '01', title: 'Specifications', text: 'Width, depth, height, materials, colour and type from 3,961 mebel.kz listings. Colour variants of one design stay on the same side of the split.' },
+  { n: '02', title: 'Product names', text: 'The second source for price, on the same listings and test set: TF-IDF word pieces we fit ourselves against a pretrained multilingual-e5 encoder, with the design name masked as a leakage check.' },
+  { n: '03', title: 'Photos', text: 'Licensed catalogue photos from Amazon Berkeley Objects for the type: a pretrained ResNet-18 against a small CNN trained from scratch. Every comparison uses the same objects and grouped cross-validation.' },
 ]
 
 const RESULTS = [
-  { value: 0.949, label: 'Specs-only SVM on mebel.kz', note: 'Grouped CV macro-F1, the chosen model' },
-  { value: 0.918, label: 'Three sizes alone', note: 'Type is mostly a size question' },
-  { value: 0.606, label: 'Same model on another store', note: 'Sizes do not transfer cleanly to Amazon' },
+  { value: 0.918, decimals: 3, label: 'Type from three sizes alone', note: 'Test macro-F1: the type is mostly a size question' },
+  { value: 22.1, decimals: 1, suffix: '%', label: 'Price error, specifications only', note: 'Test MAPE, random forest, 793 listings' },
+  { value: 0.794, decimals: 3, label: 'Type from specs + photo on Amazon', note: 'Grouped CV macro-F1, up from 0.662 with specs alone' },
 ]
 
 const LOGOS = [
   { src: '/logos/mebel-kz.svg', alt: 'mebel.kz', h: 14 },
   { src: '/logos/amazon.png', alt: 'Amazon', h: 16 },
-  { src: '/logos/ikea.png', alt: 'IKEA', h: 19 },
 ]
 
 // Infinite logo strip: the track holds two identical halves and slides by -50%.
@@ -81,8 +80,8 @@ export default function Home() {
           <MaskedLines as="h1" lines={['Furniture,', 'read by a model.']} className="display" start={280} immediate />
           <Reveal delay={620}>
             <p className="lede">
-              Give it the sizes, price and materials of a listing or a single product photo. The saved models
-              tell you what kind of furniture it is and how sure they are.
+              Give it the sizes, materials and name of a listing and it estimates the price; give it the sizes or
+              a single product photo and it tells you what kind of furniture it is and how sure it is.
             </p>
           </Reveal>
           <Reveal delay={780}>
@@ -103,7 +102,7 @@ export default function Home() {
         )}
         <div className="section-head">
           <Reveal><p className="eyebrow">Method</p></Reveal>
-          <MaskedLines lines={['Two sources,', 'one honest comparison.']} className="title" />
+          <MaskedLines lines={['A second source,', 'one honest comparison.']} className="title" />
         </div>
         <div className="msteps">
           {STEPS.map((step, index) => (
@@ -123,19 +122,19 @@ export default function Home() {
         <div className="story-inner">
           <div className="story-head">
             <Reveal><p className="eyebrow light">Results</p></Reveal>
-            <MaskedLines lines={['Photos see what', 'a tape measure misses.']} className="title light" />
+            <MaskedLines lines={['Names price what', 'a tape measure misses.']} className="title light" />
           </div>
           <div className="story-copy">
             <Reveal delay={160}>
               <div className="big-stat">
-                <span className="big-num"><CountUp value={0.794} duration={1800} /></span>
-                <span className="big-cap">macro-F1 from specs + photo on ABO,<br />up from <b>0.662</b> with specs alone</span>
+                <span className="big-num"><CountUp value={20.6} decimals={1} duration={1800} />%</span>
+                <span className="big-cap">test price error (MAPE) from specifications + product name,<br />down from <b>22.1%</b> with specifications alone</span>
               </div>
             </Reveal>
             <Reveal delay={260}>
               <blockquote>
-                TV-stand recall rose from 0.08 to 0.64 once the photo was added: the low cabinets that sizes
-                alone keep calling chests of drawers.
+                Fabric, sliding doors and wall-hung cabinets are in the name, not in the size table. With the
+                design name masked, three quarters of the gain stays: the model reads words, not price tags.
               </blockquote>
             </Reveal>
           </div>
@@ -143,7 +142,7 @@ export default function Home() {
         <div className="stat-row">
           {RESULTS.map((item, index) => (
             <Reveal key={item.label} delay={index * 120} className="stat glass">
-              <span className="stat-num"><CountUp value={item.value} /></span>
+              <span className="stat-num"><CountUp value={item.value} decimals={item.decimals} />{item.suffix ?? ''}</span>
               <span className="stat-label">{item.label}</span>
               <span className="stat-note">{item.note}</span>
             </Reveal>
@@ -162,7 +161,7 @@ export default function Home() {
             <Tilt className="card surface">
               <div className="card-fig"><b>3,961</b><span>listings, no photos</span></div>
               <h3>mebel.kz listings</h3>
-              <p>Sizes, price, materials and colour of 3,961 listings. The store’s copyright notice forbids reusing its photos without consent, so no mebel.kz photo was downloaded.</p>
+              <p>Sizes, price, materials, colour and product name of 3,961 listings. The store’s copyright notice forbids reusing its photos and page text without consent, so no photo or description was used.</p>
             </Tilt>
           </Reveal>
           <Reveal delay={120}>

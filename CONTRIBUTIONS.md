@@ -41,13 +41,59 @@ Sultanbek should explain why groups prevent leakage, how settings were selected,
 - [x] Slide numbers checked against the notebook; slides re-exported with the corrected surname and the speaker split above.
 - [x] Archive built and inspected; both partners upload the same file by **Wednesday 11 November 2026, 23:59**.
 
-## Final: AI tools we used
+## Final: who did what
 
-Who did what in the Final, and the speaking split, still need to be filled in by the team.
+Same convention as the Endterm: **lead** owns the method, the interpretation and the corrections; **review** checks the lead's work and must be able to explain it. **This table is a proposal written on 21 November 2026; both partners confirm or correct it before submission.**
+
+| Part of the Final (`final.ipynb` and app) | Sultanbek Zhumagali | Tamerlan Yessimov |
+|---|---|---|
+| Existing solutions; problem reformulation after the teacher's 20 Nov message (sections 0, 4) | Lead | Review |
+| Section 1: colour variants, new grouping, re-scoring, per-design scores | Lead | Review |
+| Section 2: per-class metrics, coffee tables, PR-AUC | Review | Lead |
+| Section 3: photo terms, rights / matching / missing-inputs table, `DATA_CARD.md` | Review | Lead |
+| Section 5: ABO photos, small CNN, ResNet-18, specs + photo | Lead | Review |
+| Section 6: cross-store test | Review | Lead |
+| Section 7: price models, name text (TF-IDF, e5), masking ablation | Lead | Review |
+| Section 7.2-7.3: run-to-run variation, price error analysis | Review | Lead |
+| Section 8-9: saved models, conclusions, limitations | shared | shared |
+| App (`api.py`, `frontend/`): price mode, input checks, demo script | Review | Lead |
+| Slides and the timed talk | shared | shared |
+| Message to the teacher (ABO and product names) | Lead | Review |
+| Fresh-kernel run, archive build and check, both uploads | Lead; build | Check the archive independently |
+
+### Defense roles: Tuesday 24 November 2026
+
+The talk and the app demo together are **10 minutes, hard stop**. Rehearse to 9:00. Both partners speak.
+
+| Speaker | Part | Time |
+|---|---|---|
+| Sultanbek | Question, the teacher's feedback and why the question moved to price; existing solutions | 1:15 |
+| Tamerlan | Data, rights (no mebel.kz photos; names yes, descriptions no; ABO), the fixed split and groups | 1:00 |
+| Sultanbek | Type as a finding: colour twins, 0.95 in CV, 0.918 from three sizes, per-class, 0.61 in another store | 1:15 |
+| Sultanbek | Price: baselines, specs-only models, specs + name (own vs pretrained), masking check | 1:45 |
+| Tamerlan | Run-to-run variation and the price errors (modular sofas, the *Монблан* chest, fabric words) | 1:15 |
+| Tamerlan | Photos on ABO: ResNet-18 vs small CNN vs specs, TV stands | 0:45 |
+| Tamerlan | Live demo: price with and without the name, one invalid input, type from a photo | 1:00 |
+| Sultanbek | Conclusions and limitations | 0:45 |
+
+Total 9:00. Each partner must also be able to explain the other's parts and say which work was AI-assisted.
+
+### Checks before submitting (Final)
+
+- [x] `final.ipynb` run from a fresh kernel (`jupyter nbconvert --execute`) after the price section was added; the saved-model reload checks pass (21 November 2026).
+- [x] App checked against the saved models: the three modes and the invalid-input answers (21 November 2026).
+- [ ] Both partners have read sections 4, 7 and 9 and can explain them.
+- [ ] Message to the teacher sent (ABO as a secondary photo source; product names as the text source).
+- [ ] Slides made and the talk rehearsed to 9:00 with the demo.
+- [ ] Archive `Final_Zhumagali_Sultanbek_SE-2420.zip` (name to be checked on Moodle) built, opened and checked; both partners upload the same file by Sunday 22 November 2026.
+
+## Final: AI tools we used
 
 | Tool | What we used it for |
 |---|---|
 | **Claude Code** (Anthropic, model Claude Opus 5.5) | At the team's request, after the Endterm feedback: found the colour variants the Endterm grouping missed and wrote the new grouping (`furniture/features.py`); added the per-class and PR-AUC analysis; checked the mebel.kz photo terms (robots.txt and the copyright notice) and recorded them; proposed Amazon Berkeley Objects as a licensed photo source, wrote `scraper/build_abo.py` and `scraper/download_abo_images.py` and downloaded the data; wrote the photo code (`furniture/abo.py`, `furniture/photos.py`: ResNet-18 features, small CNN), the cross-validation script `tools/abo_experiment.py`, the cross-store check, the notebook builder `tools/build_final_notebook.py` and its interpretation texts, `app.py`, and the updates to `README.md`, `DATA_CARD.md` and `CHANGES.md`. Ran the notebook from a fresh kernel and tested the app with Streamlit's AppTest. |
+| **Claude Code** (Anthropic, model Claude Opus 5.5), 21 November 2026 | At Sultanbek's request, after the teacher's 20 Nov message and a Codex review of the rubric: wrote the price section (`furniture/price.py`, `tools/price_experiment.py`, notebook sections 4.1 and 7: specs-only models, product-name text with TF-IDF and multilingual-e5-small, the masking ablation, run-to-run variation, error analysis), the existing-solutions section and the rights / matching / missing-inputs table, the price model file and the price mode of the app (`api.py`, `frontend/src/PredictPage.tsx`) with stricter input checks; re-downloaded the ABO photos, re-ran `final.ipynb` from a fresh kernel, and updated `README.md`, `CHANGES.md`, `DATA_CARD.md` and this file (the who-did-what table above is its proposal). |
+| **OpenAI Codex** | Reviewed the project against the Final rubric and listed what was still missing (existing solutions, rights and matching documentation, run-to-run variation, app input checks, archive name, timing). That list was checked against the rubric PDF and extended with the idea of using the product names as a second source on the same listings. |
 
 AI generated substantial code and draft interpretations for the Final, as recorded above. The team is responsible for checking the results and being able to explain every section.
 

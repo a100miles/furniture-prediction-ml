@@ -1,5 +1,7 @@
 # Remaining project tasks
 
+> **Superseded.** This review is from the Endterm (11 November). For the Final, see `HANDOFF.md` (status on 21 November) and the checklist in `CONTRIBUTIONS.md`.
+
 Reviewed on 11 November 2026 against the files in this folder. The team subsequently confirmed a Thursday 12 November defense and submission by Wednesday 11 November at 23:59. Moodle, uploads, completed personal work and rehearsal have not been independently verified.
 
 ## Already present

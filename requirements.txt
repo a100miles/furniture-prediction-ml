@@ -20,3 +20,9 @@ streamlit==1.67.0
 starlette==1.10.0
 uvicorn==0.54.0
 python-multipart==0.0.34
+# Final: pretrained text encoder for the price section (multilingual-e5-small, downloaded on first use, ~470 MB)
+sentence-transformers==6.3.0
+transformers==5.24.0
+huggingface-hub==2.4.0
+tokenizers==0.23.3
+safetensors==0.8.0

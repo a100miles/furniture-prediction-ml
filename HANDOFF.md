@@ -2,6 +2,20 @@
 
 Written 20 November 2026 for Tamerlan (or his AI agent) to continue and finish the Final. Read this first, then `README.md` and `CHANGES.md`.
 
+## Status on 21 November 2026 (read this first)
+
+The "Next steps" below were carried out on 21 Nov, with one change to the plan: the price model also uses a **second source on the same listings, the product name** (TF-IDF features we fit ourselves vs the pretrained multilingual-e5-small), because price from specifications alone would give the main question no new source. The note below "do not use `name` as an input" was tested instead of assumed: with grouped splits and the design name masked, three quarters of the name's gain stays (notebook 7.1), so the full name is used and the masked result is reported next to it.
+
+Done: notebook sections 4.1 (teacher's message, 0.918 from three sizes) and 7 (price), existing solutions, rights / matching / missing-inputs table (3.2), run-to-run variation (7.2), `models/price_best.joblib`, price mode in the React app with input checks, `README.md`, `CHANGES.md`, `DATA_CARD.md`, `CONTRIBUTIONS.md` (who-did-what is a **proposal** both of you must confirm), fresh-kernel run.
+
+Still for the team: send the teacher the two questions (README, last section); confirm the who-did-what table; read sections 4, 7, 9; make the slides; rehearse to 9:00 with the demo; check the archive name on Moodle; both upload by 22 Nov.
+
+Key price numbers (CV MAE / test MAE, KZT): median of type 94,800 / 97,900; specs only, random forest 61,400 / 54,300; **specs + name, TF-IDF + SVR 59,100 / 51,700 (chosen)**; specs + name, e5 + SVR 60,200 / 54,200. Chosen model better than specs-only in 6 of 6 fold cuts.
+
+---
+
+*The rest of this file is the original handoff of 20 November, kept for the record.*
+
 ## Deadlines and format
 
 | What | When |

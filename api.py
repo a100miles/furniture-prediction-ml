@@ -20,6 +20,10 @@ from starlette.staticfiles import StaticFiles
 from furniture.abo import size_features
 from furniture.features import TYPES, add_features
 from furniture.photos import resnet18_features
+from furniture.price import app_inputs
+
+MATERIAL_NAMES = ["chipboard", "mdf", "fibreboard", "solid_wood", "plywood", "veneer", "metal", "plastic",
+                  "glass", "mirror", "fabric", "leather", "foam", "spring", "rattan", "stone"]
 
 
 ROOT = Path(__file__).resolve().parent
@@ -60,7 +64,7 @@ def specification_row(data, include_price=True, include_weight=False):
         "width_cm": validate_number(data, "width_cm", 10, 500),
         "depth_cm": validate_number(data, "depth_cm", 10, 500),
         "height_cm": validate_number(data, "height_cm", 10, 500),
-        "materials": "|".join(data.get("materials", [])),
+        "materials": "|".join(validate_materials(data, MATERIAL_NAMES)),
         "main_color": str(data.get("main_color", "other")),
     }
     if include_price:
@@ -70,12 +74,76 @@ def specification_row(data, include_price=True, include_weight=False):
     return row
 
 
+@lru_cache(maxsize=1)
+def load_price_model():
+    return joblib.load(ROOT / "models" / "price_best.joblib")
+
+
+def validate_choice(data, name, allowed, default=None):
+    value = data.get(name, default)
+    if value not in allowed:
+        raise ValueError(f"{name} must be one of: {', '.join(allowed)}.")
+    return value
+
+
+def validate_materials(data, allowed):
+    materials = data.get("materials", [])
+    if not isinstance(materials, list):
+        raise ValueError("materials must be a list.")
+    unknown = sorted(set(materials) - set(allowed))
+    if unknown:
+        raise ValueError(f"Unknown material(s): {', '.join(unknown)}.")
+    return materials
+
+
 async def health(_request):
     try:
         load_models()
-        return JSONResponse({"status": "ready", "models": 3})
+        load_price_model()
+        return JSONResponse({"status": "ready", "models": 4})
     except FileNotFoundError:
         return JSONResponse({"status": "missing_models"}, status_code=503)
+
+
+def price_estimate(entry, inputs):
+    log_price = float(entry["pipeline"].predict(inputs)[0])
+    low, high = entry["residual_q10"], entry["residual_q90"]
+    return {
+        "price_kzt": round(float(np.exp(log_price)), -2),
+        "low_kzt": round(float(np.exp(log_price + low)), -2),
+        "high_kzt": round(float(np.exp(log_price + high)), -2),
+        "model": entry["name"],
+        "cv_mae_kzt": float(entry["cv_mae_kzt"]),
+        "cv_mape": float(entry["cv_mape"]),
+    }
+
+
+async def predict_price(request: Request):
+    try:
+        data = await request.json()
+        saved = load_price_model()
+        name = str(data.get("name", "") or "").strip()
+        if len(name) > 200:
+            raise ValueError("name must be at most 200 characters.")
+        row = {
+            "width_cm": validate_number(data, "width_cm", 10, 500),
+            "depth_cm": validate_number(data, "depth_cm", 10, 500),
+            "height_cm": validate_number(data, "height_cm", 10, 500),
+            "furniture_type": validate_choice(data, "furniture_type", TYPES),
+            "main_color": validate_choice(data, "main_color", saved["colours"], "other"),
+            "materials": "|".join(validate_materials(data, saved["material_names"])),
+            "name": name,
+        }
+        specs_entry, name_entry = saved["specs"], saved["with_name"]
+        inputs = app_inputs(pd.DataFrame([row]), saved["materials"], name_entry.get("e5_columns") if name else None)
+        payload = {"specs_only": price_estimate(specs_entry, inputs), "with_name": None}
+        if name:
+            payload["with_name"] = price_estimate(name_entry, inputs)
+        return JSONResponse(payload)
+    except (ValueError, KeyError) as exc:
+        return JSONResponse({"error": str(exc)}, status_code=422)
+    except Exception as exc:
+        return JSONResponse({"error": f"Prediction failed: {exc}"}, status_code=500)
 
 
 async def predict_specs(request: Request):
@@ -165,6 +233,7 @@ routes = [
     Route("/api/health", health),
     Route("/api/predict/specs", predict_specs, methods=["POST"]),
     Route("/api/predict/photo", predict_photo, methods=["POST"]),
+    Route("/api/predict/price", predict_price, methods=["POST"]),
 ]
 if (DIST / "assets").exists():
     routes.append(Mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets"))
