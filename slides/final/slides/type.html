@@ -1,0 +1,15 @@
+<section id="type">
+<div class="head">
+<p class="eyebrow">Type, now a finding</p>
+<h2>About 0.95 in one store, and much less outside it</h2>
+</div>
+<div class="cards four">
+<div class="card" style="--i: 0;"><p class="num" style="font-size: 80px;">0.949</p><p class="cap">SVM, grouped CV, after colour twins were kept on one side (forest fell 0.958 → 0.933)</p></div>
+<div class="card" style="--i: 1;"><p class="num" style="font-size: 80px;">0.940</p><p class="cap">Test, counting each of the 92 designs once (0.974 per listing)</p></div>
+<div class="card" style="--i: 2;"><p class="num" style="font-size: 80px;">0.991</p><p class="cap">Coffee-table PR-AUC: the small class is not the weak one</p></div>
+<div class="card" style="--i: 3;"><p class="num blue" style="font-size: 80px;">0.606</p><p class="cap">The mebel.kz model on Amazon listings, sizes only</p></div>
+</div>
+<p class="lead" style="width: 1560px;">The weak classes are mid-size case furniture: TV stand, desk and chest of drawers (CV F1 0.875–0.914). Their size thresholds belong to one store’s catalogue.</p>
+<div class="foot"><p>final.ipynb, sections 1, 2 and 6</p><p class="pg"></p></div>
+<aside>Sultanbek (about 1 minute 15 seconds). The Endterm feedback asked us to check colour variants. Our grouping missed 44 test listings whose twin was in training. With a stricter grouping the random forest fell from 0.958 to 0.933 and the SVM, 0.949, became the chosen model. Counting each design once, the test score is 0.940. Coffee tables are only 4% but have PR-AUC 0.991; the weak classes are TV stands, desks and chests. And the model does not travel: on Amazon listings it scores 0.606.</aside>
+</section>

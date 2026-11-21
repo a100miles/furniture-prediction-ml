@@ -1,0 +1,17 @@
+<section id="existing">
+<div class="head">
+<p class="eyebrow">Existing solutions</p>
+<h2>What others did, and what we take</h2>
+</div>
+<table>
+<tr><th style="width: 30%;">Work</th><th style="width: 32%;">Method</th><th style="width: 38%;">What we take</th></tr>
+<tr><td>IKEA prices (J. Silge, 2020)</td><td>Random forest on category, designer, sizes</td><td>Tree ensemble on specs as the price baseline</td></tr>
+<tr><td>Mercari price challenge (Kaggle, 1st place)</td><td>TF-IDF words + character n-grams of titles, small MLPs</td><td>Product titles carry price; our TF-IDF name features</td></tr>
+<tr><td>Multilingual E5 (Wang et al., 2024)</td><td>Pretrained sentence encoder, ~100 languages</td><td>Our pretrained text model (e5-small, frozen)</td></tr>
+<tr><td>ABO (Collins et al., CVPR 2022)</td><td>Amazon listings with photos, CC BY 4.0</td><td>Our photo source for the type</td></tr>
+<tr><td>ResNet-18 on ImageNet (He et al., 2016)</td><td>Frozen features + linear classifier</td><td>Pretrained photo model vs a small CNN</td></tr>
+</table>
+<p class="body">What we add: colour variants of one design always stay on one side of the split, and every comparison runs on the same test objects.</p>
+<div class="foot"><p>final.ipynb, “Existing solutions”</p><p class="pg"></p></div>
+<aside>Sultanbek (about 15 seconds). Two price works shaped the method: the IKEA tutorial uses a random forest on sizes and category, which is our specs baseline; the Mercari winners showed that TF-IDF features of product titles carry price, which is what we do with mebel.kz names. The pretrained models are multilingual E5 for text and ResNet-18 for photos.</aside>
+</section>
