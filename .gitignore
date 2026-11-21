@@ -10,3 +10,4 @@ frontend/node_modules/
 .impeccable/review/
 tmp/
 *.tsbuildinfo
+.torch-cache/
