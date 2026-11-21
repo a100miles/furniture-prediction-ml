@@ -25,7 +25,7 @@ export default function App() {
     let active = true
     fetch('/api/health')
       .then((response) => (response.ok ? response.json() : Promise.reject()))
-      .then((body) => { if (active) setStatus(body.status === 'ready' && body.models === 3 ? 'ready' : 'unavailable') })
+      .then((body) => { if (active) setStatus(body.status === 'ready' ? 'ready' : 'unavailable') })
       .catch(() => { if (active) setStatus('unavailable') })
     return () => { active = false }
   }, [])

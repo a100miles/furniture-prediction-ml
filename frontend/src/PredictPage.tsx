@@ -276,7 +276,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
       else setResult(body)
     } catch (problem) {
       setError(problem instanceof TypeError
-        ? 'The model server is not reachable. Start it with `python api.py` and reload this page.'
+        ? 'The model server is temporarily unavailable. Please reload the page and try again.'
         : problem instanceof Error ? problem.message : 'The model could not complete this prediction.')
     } finally {
       setLoading(false)
@@ -310,7 +310,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
           </div>
         </Reveal>
         {status === 'unavailable' && (
-          <p className="offline"><AlertCircle size={15} /> The model server is offline. Start it with <code>python api.py</code>, then reload.</p>
+          <p className="offline"><AlertCircle size={15} /> The model server is temporarily unavailable. Reload the page to try again.</p>
         )}
       </header>
 
