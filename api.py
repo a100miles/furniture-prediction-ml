@@ -19,8 +19,8 @@ from starlette.staticfiles import StaticFiles
 
 from furniture.abo import size_features
 from furniture.features import TYPES, add_features
-from furniture.photos import resnet18_features
-from furniture.price import app_inputs
+from furniture.photos import encoder_features
+from furniture.price import app_inputs, check_name
 
 MATERIAL_NAMES = ["chipboard", "mdf", "fibreboard", "solid_wood", "plywood", "veneer", "metal", "plastic",
                   "glass", "mirror", "fabric", "leather", "foam", "spring", "rattan", "stone"]
@@ -34,8 +34,10 @@ DIST = ROOT / "frontend" / "dist"
 def load_models():
     return (
         joblib.load(ROOT / "models" / "structured_best.joblib"),
-        joblib.load(ROOT / "models" / "abo_photo.joblib"),
-        joblib.load(ROOT / "models" / "abo_specs_photo.joblib"),
+        # DINOv2 replaced ResNet-18 after the survey (final.ipynb 5.6: CV macro-F1 0.844 vs 0.766 photo only)
+        joblib.load(ROOT / "models" / "abo_photo_dinov2.joblib"),
+        joblib.load(ROOT / "models" / "abo_specs_photo_dinov2.joblib"),
+        joblib.load(ROOT / "models" / "structured_noprice.joblib"),
     )
 
 
@@ -69,6 +71,8 @@ def specification_row(data, include_price=True, include_weight=False):
     }
     if include_price:
         row["price_kzt"] = validate_number(data, "price_kzt", 5_000, 10_000_000)
+    else:
+        row["price_kzt"] = np.nan        # not an input of the model used without a price
     if include_weight:
         row["weight_kg"] = validate_number(data, "weight_kg", 0.5, 500)
     return row
@@ -100,7 +104,7 @@ async def health(_request):
     try:
         load_models()
         load_price_model()
-        return JSONResponse({"status": "ready", "models": 4})
+        return JSONResponse({"status": "ready", "models": 5})
     except FileNotFoundError:
         return JSONResponse({"status": "missing_models"}, status_code=503)
 
@@ -135,9 +139,10 @@ async def predict_price(request: Request):
             "name": name,
         }
         specs_entry, name_entry = saved["specs"], saved["with_name"]
-        inputs = app_inputs(pd.DataFrame([row]), saved["materials"], name_entry.get("e5_columns") if name else None)
-        payload = {"specs_only": price_estimate(specs_entry, inputs), "with_name": None}
-        if name:
+        name_ok, name_note = check_name(name, name_entry["pipeline"], row["furniture_type"]) if name else (False, "")
+        inputs = app_inputs(pd.DataFrame([row]), saved["materials"], name_entry.get("e5_columns") if name_ok else None)
+        payload = {"specs_only": price_estimate(specs_entry, inputs), "with_name": None, "name_note": name_note}
+        if name_ok:
             payload["with_name"] = price_estimate(name_entry, inputs)
         return JSONResponse(payload)
     except (ValueError, KeyError) as exc:
@@ -149,13 +154,16 @@ async def predict_price(request: Request):
 async def predict_specs(request: Request):
     try:
         data = await request.json()
-        row = pd.DataFrame([specification_row(data)])
-        structured, _, _ = load_models()
-        inputs = add_features(row, materials=structured["materials"])[structured["features"]]
-        pipe = structured["pipeline"]
-        payload = probability_payload(pipe, pipe.predict_proba(inputs)[0], "mebel.kz specifications")
-        payload["model"] = structured["name"]
-        payload["cv_macro_f1"] = float(structured["cv_macro_f1"])
+        has_price = data.get("price_kzt") not in (None, "")
+        row = pd.DataFrame([specification_row(data, include_price=has_price)])
+        structured, _, _, noprice = load_models()
+        model = structured if has_price else noprice
+        inputs = add_features(row, materials=model["materials"])[model["features"]]
+        pipe = model["pipeline"]
+        source = "mebel.kz specifications" if has_price else "mebel.kz specifications without price"
+        payload = probability_payload(pipe, pipe.predict_proba(inputs)[0], source)
+        payload["model"] = model["name"]
+        payload["cv_macro_f1"] = float(model["cv_macro_f1"])
         return JSONResponse(payload)
     except (ValueError, KeyError) as exc:
         return JSONResponse({"error": str(exc)}, status_code=422)
@@ -181,15 +189,15 @@ async def predict_photo(request: Request):
         square.paste(image, ((side - image.width) // 2, (side - image.height) // 2))
         tensor = torch.from_numpy(np.array(square.resize((224, 224)))).permute(2, 0, 1).unsqueeze(0)
 
-        _, photo_model, combined = load_models()
+        _, photo_model, combined, _ = load_models()
         embedding = pd.DataFrame(
-            resnet18_features(tensor), columns=photo_model["embedding_columns"]
+            encoder_features(photo_model["encoder"], tensor), columns=photo_model["embedding_columns"]
         )
         use_specs = str(form.get("use_specs", "false")).lower() == "true"
         if not use_specs:
             pipe = photo_model["pipeline"]
             payload = probability_payload(pipe, pipe.predict_proba(embedding)[0], "ABO photo")
-            payload["model"] = "ResNet-18 features + logistic regression"
+            payload["model"] = "DINOv2 features + logistic regression"
             payload["cv_macro_f1"] = float(photo_model["cv_macro_f1"])
             return JSONResponse(payload)
 
@@ -207,7 +215,7 @@ async def predict_photo(request: Request):
         inputs = pd.concat([specs.reset_index(drop=True), embedding], axis=1)
         pipe = combined["pipeline"]
         payload = probability_payload(pipe, pipe.predict_proba(inputs)[0], "ABO photo + specifications")
-        payload["model"] = "ResNet-18 features + structured features"
+        payload["model"] = "DINOv2 features + specifications, logistic regression"
         payload["cv_macro_f1"] = float(combined["cv_macro_f1"])
         return JSONResponse(payload)
     except (ValueError, KeyError, Image.UnidentifiedImageError) as exc:

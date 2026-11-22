@@ -114,6 +114,36 @@ def app_inputs(d, materials, e5_columns=None):
     return d
 
 
+# Unambiguous type words in mebel.kz names (lower case, prefix match). "стол" (desk or coffee table) and "тумба"
+# (chest, TV stand or office pedestal) are left out because they name more than one of our types.
+TYPE_WORDS = {"sofa": ("диван", "кушетк"), "armchair": ("кресл",), "chair": ("стул",), "bed": ("кроват",),
+              "wardrobe": ("шкаф",), "chest_of_drawers": ("комод",), "desk": ("письменн",),
+              "coffee_table": ("журнальн",), "tv_stand": ("тв-тумб", "тв")}
+
+
+def check_name(name, pipeline, furniture_type):
+    """Should the specs + name model be trusted for this name? Returns (ok, reason).
+
+    Added after a user test of the app (22 Nov): a name of made-up letters ("asdkjh qwe") becomes an all-zero
+    TF-IDF vector, unlike any training name, and the SVR then returned a higher price than for any real name;
+    a wardrobe name on a sofa also moved the price. The model only learned from real names of the chosen type,
+    so such names fall back to the specifications-only estimate."""
+    words_vec = pipeline.named_steps["prep"].named_transformers_["text"].transformer_list[0][1]
+    words = [w for w in words_vec.build_analyzer()(name) if " " not in w]
+    if not words:
+        return False, "The name has no words the model can read."
+    known = [w for w in words if w in words_vec.vocabulary_]
+    if len(known) < max(1, len(words) / 2):
+        return False, (f"The model knows {len(known)} of the {len(words)} words in this name, too few to trust it. "
+                       "It learned only from real mebel.kz product names.")
+    lower = [w.lower() for w in words]
+    named = {t for t, stems in TYPE_WORDS.items() for w in lower for s in stems if w == s or (len(s) > 2 and w.startswith(s))}
+    if named and furniture_type not in named:
+        return False, (f"The name describes a different type of furniture than the one selected, "
+                       "and the model never saw such a mix.")
+    return True, ""
+
+
 def price_metrics(y_log, pred_log, weight=None):
     y, p = np.exp(y_log), np.exp(pred_log)
     w = np.ones_like(y) if weight is None else np.asarray(weight)

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Home from './Home'
+import HowPage from './HowPage'
 import PredictPage, { ModelStatus } from './PredictPage'
 import { Link, usePath } from './router'
 
@@ -19,6 +20,7 @@ function GithubMark() {
 export default function App() {
   const path = usePath()
   const onPredict = path.startsWith('/predict')
+  const onHow = path.startsWith('/how')
   const [status, setStatus] = useState<ModelStatus>('checking')
 
   useEffect(() => {
@@ -31,22 +33,22 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = onPredict ? 'Predict · Furniture Model Studio' : 'Furniture Model Studio'
-  }, [onPredict])
+    document.title = onPredict ? 'Predict · Furniture Model Studio' : onHow ? 'How it works · Furniture Model Studio' : 'Furniture Model Studio'
+  }, [onPredict, onHow])
 
   return (
     <>
       <header className="nav">
         <nav aria-label="Pages">
-          <Link to="/" className={onPredict ? '' : 'on'}>Home</Link>
+          <Link to="/" className={onPredict || onHow ? '' : 'on'}>Home</Link>
           <Link to="/predict" className={onPredict ? 'on' : ''}>Predict</Link>
-          <Link to="/#method">Method</Link>
+          <Link to="/how" className={onHow ? 'on' : ''}>How it works</Link>
           <Link to="/#results">Results</Link>
           <Link to="/#data">Data</Link>
         </nav>
       </header>
 
-      {onPredict ? <PredictPage status={status} /> : <Home />}
+      {onPredict ? <PredictPage status={status} /> : onHow ? <HowPage /> : <Home />}
 
       {!onPredict && <footer className="footer">
         <video className="footer-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
@@ -56,6 +58,7 @@ export default function App() {
           <div>
             <h4>Project</h4>
             <Link to="/predict">Predict</Link>
+            <Link to="/how">How it works</Link>
             <Link to="/#method">Method</Link>
             <Link to="/#results">Results</Link>
             <Link to="/#data">Data</Link>
