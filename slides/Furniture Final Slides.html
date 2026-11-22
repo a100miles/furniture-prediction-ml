@@ -172,17 +172,18 @@ aside { display: none; }
 <p class="eyebrow">Price: same listings, same 793 test listings</p>
 <h2>The name lowers the error a little; our own features beat the pretrained ones</h2>
 </div>
-<div style="display: flex; flex-direction: column; gap: 18px;">
+<div style="display: flex; flex-direction: column; gap: 14px;">
 <div class="bar-row" style="--i: 0;"><p class="bar-label">Median price of the type</p><div class="bar" style="width: 760px;"></div><p class="bar-val">94,800</p></div>
 <div class="bar-row" style="--i: 1;"><p class="bar-label">Name only (TF-IDF, ridge)</p><div class="bar" style="width: 680px;"></div><p class="bar-val">84,900</p></div>
 <div class="bar-row" style="--i: 2;"><p class="bar-label">Specs, ridge</p><div class="bar" style="width: 518px;"></div><p class="bar-val">64,700</p></div>
-<div class="bar-row" style="--i: 3;"><p class="bar-label">Specs, random forest (best specs)</p><div class="bar" style="width: 492px;"></div><p class="bar-val">61,400 · test 54,300</p></div>
-<div class="bar-row" style="--i: 4;"><p class="bar-label">Specs + name, pretrained e5, SVR</p><div class="bar pre" style="width: 482px;"></div><p class="bar-val">60,200 · test 54,200</p></div>
-<div class="bar-row" style="--i: 5;"><p class="bar-label"><b>Specs + name, own TF-IDF, SVR</b></p><div class="bar best" style="width: 473px;"></div><p class="bar-val">59,100 · test 51,700</p></div>
+<div class="bar-row" style="--i: 3;"><p class="bar-label">Specs, random forest</p><div class="bar" style="width: 492px;"></div><p class="bar-val">61,400 · test 54,300</p></div>
+<div class="bar-row" style="--i: 4;"><p class="bar-label">Specs, LightGBM (best specs)</p><div class="bar" style="width: 486px;"></div><p class="bar-val">60,600 · test 53,700</p></div>
+<div class="bar-row" style="--i: 5;"><p class="bar-label">Specs + name, pretrained e5, SVR</p><div class="bar pre" style="width: 482px;"></div><p class="bar-val">60,200 · test 54,200</p></div>
+<div class="bar-row" style="--i: 6;"><p class="bar-label"><b>Specs + name, own TF-IDF, SVR</b></p><div class="bar best" style="width: 473px;"></div><p class="bar-val">59,100 · test 51,700</p></div>
 </div>
-<p class="body" style="width: 1600px;">Grouped 5-fold CV mean absolute error in tenge (bars); test MAE once at the end. Chosen model: test MAPE <b>20.6%</b> vs 22.1% for specs only. Names are short and full of shop words and sizes; character pieces catch them, a general sentence encoder does not.</p>
-<div class="foot"><p>final.ipynb, section 7 · median price 229,600 KZT</p><p class="pg"></p></div>
-<aside>Sultanbek (about 1 minute 45 seconds). Same 3,961 listings, same 793 test listings, same groups. The median price of the type gives an error of 95 thousand tenge. Specifications bring it to about 61 thousand: a random forest, boosting, SVR and ridge are all within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained multilingual e5 encoder adds less than our own features: names are short and full of shop-specific words like fabric names and sizes, which character pieces catch directly.</aside>
+<p class="body" style="width: 1600px;">Grouped 5-fold CV mean absolute error in tenge (bars); test MAE once at the end. Chosen model: test MAPE <b>20.6%</b> vs 22.1% for specs only. <b>Second market, IKEA Saudi Arabia</b> (620 items): the same SVR + name beats specs only, MAPE 46.6% → <b>39.9%</b>.</p>
+<div class="foot"><p>final.ipynb, sections 7 and 7.4 · median price 229,600 KZT</p><p class="pg"></p></div>
+<aside>Sultanbek (about 1 minute 45 seconds). Same 3,961 listings, same 793 test listings, same groups. The median price of the type gives an error of 95 thousand tenge. Specifications bring it to about 61 thousand; after the survey we added LightGBM, which is the best specifications model, but only by a hair: all tree, linear and kernel models are within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained e5 encoder adds less than our own features: names are short and full of shop words and sizes. And the same holds in a second market: on IKEA Saudi Arabia the name brings the error from 47 to 40 percent.</aside>
 </section>
 <section id="check">
 <div class="head">
@@ -194,17 +195,17 @@ aside { display: none; }
 <h3>Leakage: mask the design name</h3>
 <p class="cap">“Диван прямой <b>Линс</b> Велюр Голубой” → “Диван прямой <b>модель</b> Велюр Голубой”</p>
 <p class="num" style="font-size: 80px;">75%</p>
-<p class="cap">of the gain stays (2,366 → 1,767 KZT in CV). The model reads fabric and function words, not design price tags.</p>
+<p class="cap">of the gain stays (SVR: 2,648 → 2,050 KZT in CV). The model reads fabric and function words, not design price tags.</p>
 </div>
 <div class="card" style="--i: 1;">
 <h3>Run-to-run: six other fold cuts</h3>
 <p class="cap">Same settings, folds cut with seeds 0–4 and 42</p>
 <p class="num" style="font-size: 80px;">6 of 6</p>
-<p class="cap">cuts favour the name model, by 2,400–4,100 KZT. Specs only 61,489 ± 550; with name 58,340 ± 412. Type SVM: 0.948 ± 0.003.</p>
+<p class="cap">cuts favour the name model, by 1,500–4,300 KZT. Specs only (LightGBM) 61,153 ± 938; with name 58,340 ± 412. Type SVM: 0.948 ± 0.003.</p>
 </div>
 </div>
 <div class="foot"><p>final.ipynb, sections 7.1 and 7.2</p><p class="pg"></p></div>
-<aside>Tamerlan (about 45 seconds). Two checks. First leakage: the name contains the design’s own name, which could give away its price. Our groups keep a design on one side of every split, and on top we masked the design name: three quarters of the gain stays. Second, run-to-run variation: with five other fold cuts, the name model wins in all six, by 2.4 to 4.1 thousand tenge. The gain is small, about 4 to 6 percent of the error, but it is not an accident of one split.</aside>
+<aside>Tamerlan (about 45 seconds). Two checks. First leakage: the name contains the design’s own name, which could give away its price. Our groups keep a design on one side of every split, and on top we masked the design name: three quarters of the gain stays. Second, run-to-run variation: with five other fold cuts, the name model wins in all six, by 1.5 to 4.3 thousand tenge over LightGBM. The gain is small, about 2 to 7 percent of the error, but it is not an accident of one split.</aside>
 </section>
 <section id="errors">
 <div class="head">
@@ -223,23 +224,23 @@ aside { display: none; }
 <section id="photos" class="dark">
 <div class="head">
 <p class="eyebrow">Photos, on a second marketplace</p>
-<h2>Where the sizes fail, a pretrained photo model helps</h2>
+<h2>Where the sizes fail, a better pretrained photo model helps most</h2>
 </div>
 <div class="cards four">
 <div class="card" style="--i: 0;"><p class="num" style="font-size: 80px;">0.662</p><p class="cap">specifications only</p></div>
 <div class="card" style="--i: 1;"><p class="num" style="font-size: 80px;">0.605</p><p class="cap">small CNN trained from scratch</p></div>
-<div class="card" style="--i: 2;"><p class="num" style="font-size: 80px;">0.766</p><p class="cap">frozen ResNet-18 + logistic regression</p></div>
-<div class="card" style="--i: 3;"><p class="num" style="font-size: 80px;">0.794</p><p class="cap">specs + photo</p></div>
+<div class="card" style="--i: 2;"><p class="num" style="font-size: 80px;">0.766</p><p class="cap">frozen ResNet-18 (fine-tuned: 0.789; CLIP: 0.801)</p></div>
+<div class="card" style="--i: 3;"><p class="num" style="font-size: 80px;">0.851</p><p class="cap">frozen DINOv2 + specs (photo alone 0.844)</p></div>
 </div>
-<p class="lead" style="width: 1560px;">Type macro-F1, grouped 5-fold CV on 3,332 Amazon (ABO) listings. TV-stand recall rises from 0.08 to 0.64 with the photo. These are other products and they have no price, so this tests the Endterm photo hypothesis, not the price.</p>
-<div class="foot"><p>final.ipynb, section 5 · photos: Amazon.com, CC BY 4.0</p><p class="pg"></p></div>
-<aside>Tamerlan (about 45 seconds). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662, and TV stands go from almost never found to mostly found. Our own small CNN, trained from scratch on about 2,700 products, underfits at 0.605. This is on other products, without price.</aside>
+<p class="lead" style="width: 1560px;">Type macro-F1, grouped 5-fold CV on 3,332 Amazon (ABO) listings. TV-stand recall: 0.08 with specs, 0.78 with DINOv2 + specs. On <b>221 IKEA photos never seen</b>, DINOv2 still scores 0.880 (ResNet-18 0.755). Other products, no price: this tests the Endterm photo hypothesis, not the price.</p>
+<div class="foot"><p>final.ipynb, sections 5, 5.6, 5.7 · photos: Amazon.com, CC BY 4.0; IKEA.com, non-commercial</p><p class="pg"></p></div>
+<aside>Tamerlan (about 1 minute). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662. Our own small CNN, trained from scratch, underfits at 0.605. After the survey we tried stronger models on the same folds: fine-tuning ResNet-18 gives 0.789, CLIP 0.801, and a frozen DINOv2 0.844, or 0.851 with the specifications; TV stands go from 8 to 78 percent found. A better pretrained encoder helped more than training a weaker one further. DINOv2 also recognised IKEA photos it had never seen, 0.880. This is on other products, without price.</aside>
 </section>
 <section id="demo" class="accent" style="justify-content: center;">
 <p class="eyebrow">Live demo · 127.0.0.1:8000</p>
 <h1 style="width: 1500px;">Price with and without the name, then a photo</h1>
-<p class="lead" style="width: 1400px;">1 · Sofa, specifications only → add “Велюр” → the price moves. 2 · An invalid size → the app refuses with a message. 3 · Type from a photo.</p>
-<aside>Tamerlan (about 1 minute). Open the Predict page. Price mode: load the Sofa example, predict without a name, then type the name and predict again; point at the range and the CV error. Then type a width of 2000 and show the error message. Finally switch to From a photo, drop one chair photo, predict. Start the server before the talk (python api.py) and keep the page open in a tab. If the demo fails, go back to the price slide and say what the app would show.</aside>
+<p class="lead" style="width: 1400px;">1 · Sofa, specifications only → add “Велюр” → the price moves; a made-up name is ignored, with a reason. 2 · Type without a price; an invalid size is refused. 3 · Type from a photo (DINOv2). 4 · The “How it works” page.</p>
+<aside>Tamerlan (about 1 minute). Open the Predict page. Price mode: load the Sofa example, predict without a name, then type the name and predict again; point at the plus-minus error and the 8-in-10 range. Type a made-up name like asdkjh and show that the app falls back to the specifications and says why. Then From specifications: switch off the price and predict; type a width of 2000 and show the error message. Switch to From a photo, drop one chair photo, predict. If time allows, open How it works for one second. Start the server before the talk (python api.py) and keep the page open in a tab. If the demo fails, go back to the price slide and say what the app would show.</aside>
 </section>
 <section id="conclusions" class="dark">
 <div class="head">
@@ -249,7 +250,7 @@ aside { display: none; }
 <div class="cards two">
 <div class="card" style="--i: 0;">
 <h3>Answered</h3>
-<p class="cap">Specifications price a listing within about 22–25%. The product name lowers the error by about 5%, steadily, and not by memorising designs. Our own text features beat a pretrained encoder here. The type is a size question (0.918 from three sizes) and stays in its store (0.606 on Amazon).</p>
+<p class="cap">Specifications price a listing within about 22–25%. The product name lowers the error by 3–5%, steadily, not by memorising designs, and also at IKEA Saudi Arabia (47% → 40%). Our own text features beat a pretrained encoder here. The type is a size question (0.918 from three sizes; the price adds nothing) and stays in its store (0.606 on Amazon). For photos, a better pretrained encoder (DINOv2, 0.851) beat training our own.</p>
 </div>
 <div class="card" style="--i: 1;">
 <h3>Limits</h3>
@@ -257,7 +258,7 @@ aside { display: none; }
 </div>
 </div>
 <div class="foot"><p>Code, notebook and app: final.ipynb, api.py, frontend/</p><p class="pg"></p></div>
-<aside>Sultanbek (about 45 seconds). Specifications predict the price within about a quarter; the name helps a little but steadily, and not by memorising designs. Our own TF-IDF features beat the pretrained encoder on these short names. The type is a size question and the model stays in its store. Limits: one store and one day, text instead of photos, CV slightly optimistic and a small test set of 92 designs. Thank you.</aside>
+<aside>Sultanbek (about 45 seconds). Specifications predict the price within about a quarter; the name helps a little but steadily, not by memorising designs, and it does so in a second market too. Our own TF-IDF features beat the pretrained encoder on these short names. The type is a size question and the model stays in its store. For photos, picking a stronger pretrained model mattered more than training our own. Limits: one store and one day, text instead of photos, CV slightly optimistic and a small test set of 92 designs. Thank you.</aside>
 </section>
 <script>
 const S = [...document.querySelectorAll('section')]; let i = 0;
