@@ -1,0 +1,16 @@
+<section id="models">
+<div class="head">
+<p class="eyebrow">Algorithms and models</p>
+<h2>Four questions, every model family compared</h2>
+</div>
+<table class="algo">
+<tr><th style="width: 19%;">Question · input</th><th style="width: 43%;">Algorithms compared</th><th style="width: 18%;">Chosen by CV</th><th style="width: 20%;">Score</th></tr>
+<tr><td><b>Type</b> · sizes, materials, colour</td><td>Dummy baseline, decision tree, KNN, SVM (RBF kernel), random forest, gradient boosting (HistGB), MLP neural net (128, 64)</td><td>SVM<br><span class="sm">C = 3, γ = 0.1</span></td><td>macro-F1 0.949 CV<br><span class="sm">0.974 test</span></td></tr>
+<tr><td><b>Price</b> · specifications</td><td>Median of the type, ridge regression, random forest, HistGB, SVR, LightGBM</td><td>LightGBM<br><span class="sm">boosted trees</span></td><td>MAE 60,600 ₸ CV<br><span class="sm">MAPE 22.1% test</span></td></tr>
+<tr class="hl"><td><b>Price</b> · specs + product name</td><td>Ridge and SVR on our own TF-IDF (words 1–2, characters 2–5) vs on a pretrained encoder (multilingual-e5-small, 384-d)</td><td>SVR + TF-IDF</td><td>MAE 59,100 ₸ CV<br><span class="sm">MAPE 20.6% test</span></td></tr>
+<tr><td><b>Type</b> · photo (Amazon ABO)</td><td>Small CNN from scratch; frozen ResNet-18, CLIP ViT-B/32, DINOv2 ViT-S/14 + logistic regression; fine-tuned ResNet-18</td><td>DINOv2 + specs<br><span class="sm">logistic regression</span></td><td>macro-F1 0.851 CV<br><span class="sm">0.880 on IKEA photos</span></td></tr>
+</table>
+<p class="body">Type is classification (scored by macro-F1); price is regression on log price (scored by MAE in tenge and MAPE). Unsupervised steps from the Endterm: PCA and k-means clustering.</p>
+<div class="foot"><p>final.ipynb, sections 1.4, 1.6, 5.4, 5.6 and 7</p><p class="pg"></p></div>
+<aside>Sultanbek (about 45 seconds). This is the whole model zoo on one slide. For the type we compared seven classifiers, from a dummy baseline and a decision tree to an SVM, random forest, gradient boosting and a small neural network; the SVM won in cross-validation. For the price, six regressors on the specifications; LightGBM, a boosted-trees library, was best. Then the same regressors with the product name, either as our own TF-IDF word and character pieces or as vectors from a pretrained multilingual encoder; an SVR on our TF-IDF features won. For photos, a small CNN we trained ourselves against three pretrained networks, ResNet-18, CLIP and DINOv2, used frozen with a logistic regression on top, plus a fine-tuned ResNet-18. DINOv2 won.</aside>
+</section>
