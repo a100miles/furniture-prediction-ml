@@ -19,6 +19,7 @@ const RESULTS = [
 const LOGOS = [
   { src: '/logos/mebel-kz.svg', alt: 'mebel.kz', h: 14 },
   { src: '/logos/amazon.png', alt: 'Amazon', h: 16 },
+  { src: '/logos/ikea.svg', alt: 'IKEA', h: 16 },
 ]
 
 // Infinite logo strip: the track holds two identical halves and slides by -50%.
@@ -80,9 +81,7 @@ export default function Home() {
           <MaskedLines as="h1" lines={['Furniture,', 'read by a model.']} className="display" start={280} immediate />
           <Reveal delay={620}>
             <p className="lede">
-              Is a furniture price in Almaty typical for what is sold? Give the sizes, materials and name of a listing
-              and the model estimates what it usually costs; give the sizes or a photo and it tells you what kind of
-              furniture it is. Along the way we test which details really decide type and price.
+              Describe a piece of furniture or upload a photo. The model tells you what it is and what it usually costs.
             </p>
           </Reveal>
           <Reveal delay={780}>
@@ -90,7 +89,6 @@ export default function Home() {
               <Magnetic>
                 <Link to="/predict" className="glass-btn">Predict <ArrowRight size={17} /></Link>
               </Magnetic>
-              <Link to="/how" className="text-link">How it works and why <ArrowRight size={15} /></Link>
             </div>
           </Reveal>
         </div>

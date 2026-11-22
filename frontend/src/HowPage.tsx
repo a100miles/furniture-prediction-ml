@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { MaskedLines, Reveal } from './reveal'
 import { Link } from './router'
@@ -76,9 +77,19 @@ const GLOSSARY = [
 ]
 
 export default function HowPage() {
+  const [heroReady, setHeroReady] = useState(false)
+  const [loopOk, setLoopOk] = useState(true)
   return (
     <main className="page how">
       <section className="how-hero">
+        <div className="how-hero-media" aria-hidden="true">
+          <img src="/hero-minimal.jpg" alt="" />
+          <video className={`hero-video${heroReady ? ' is-ready' : ''}`} autoPlay muted loop playsInline preload="metadata" onCanPlay={() => setHeroReady(true)} onError={() => setHeroReady(false)}>
+            <source src="/hero-background.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div className="hero-shade" aria-hidden="true" />
+        <div className="hero-fade" aria-hidden="true" />
         <Reveal><p className="eyebrow light">How it works</p></Reveal>
         <MaskedLines as="h1" lines={['What this project', 'is for, and how.']} className="display" start={120} immediate />
         <Reveal delay={420}>
@@ -97,7 +108,8 @@ export default function HowPage() {
         </Reveal>
       </section>
 
-      <section className="section how-block" id="how-data">
+      <section className="section how-block how-bg how-bg-data" id="how-data">
+        <img className="how-bg-media" src="/data-bg.gif" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         <div className="section-head">
           <Reveal><p className="eyebrow">1 · The data</p></Reveal>
           <MaskedLines lines={['Four sources,', 'each with a job.']} className="title" />
@@ -118,7 +130,12 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="section how-block">
+      <section className="section how-block how-bg how-bg-train">
+        {loopOk && (
+          <video className="how-bg-media" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" onError={() => setLoopOk(false)}>
+            <source src="/method-loop.mp4" type="video/mp4" onError={() => setLoopOk(false)} />
+          </video>
+        )}
         <div className="section-head">
           <Reveal><p className="eyebrow">2 · Training</p></Reveal>
           <MaskedLines lines={['A fair test,', 'in four steps.']} className="title" />
@@ -132,7 +149,8 @@ export default function HowPage() {
         </ol>
       </section>
 
-      <section className="section how-block">
+      <section className="section how-block how-bg how-bg-models">
+        <img className="how-bg-media" src="/results-bg.gif" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         <div className="section-head">
           <Reveal><p className="eyebrow">3 · The models in the app</p></Reveal>
           <MaskedLines lines={['What answers you,', 'and how good it is.']} className="title" />
@@ -158,7 +176,10 @@ export default function HowPage() {
         </Reveal>
       </section>
 
-      <section className="section how-block">
+      <section className="section how-block how-bg how-bg-findings">
+        <video className="how-bg-media" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
+          <source src="/findings-bg.mp4" type="video/mp4" />
+        </video>
         <div className="section-head">
           <Reveal><p className="eyebrow">4 · What we found</p></Reveal>
           <MaskedLines lines={['Four findings,', 'and their limits.']} className="title" />
@@ -178,7 +199,10 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="section how-block how-last">
+      <section className="section how-block how-last how-bg how-bg-glossary">
+        <video className="how-bg-media" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
+          <source src="/glossary-bg.mp4" type="video/mp4" />
+        </video>
         <div className="section-head">
           <Reveal><p className="eyebrow">5 · Words used on this site</p></Reveal>
           <MaskedLines lines={['A short', 'glossary.']} className="title" />

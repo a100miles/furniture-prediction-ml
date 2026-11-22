@@ -659,7 +659,28 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
 .how { background: var(--night); color: var(--cream); }
 .how .eyebrow { color: var(--cream-2); }
 .how .title { color: #fdf3e6; }
-.how-hero { padding: clamp(120px, 16vw, 190px) var(--gutter) 0; display: grid; gap: 26px; }
+.how-hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: max(620px, 92svh); align-content: center;
+  padding: clamp(120px, 16vw, 190px) var(--gutter) clamp(120px, 14vw, 180px); display: grid; gap: 26px;
+}
+.how-hero-media { position: absolute; inset: 0; z-index: -3; }
+.how-hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 70%; filter: saturate(1.05) sepia(.12); }
+/* section backgrounds reused from the home page; faded at top and bottom so joins stay plain espresso */
+.how-bg { position: relative; isolation: isolate; overflow: hidden; padding-bottom: clamp(80px, 11vw, 140px); }
+.how-bg-media {
+  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(1.05) sepia(.12);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+.how-bg::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.how-bg-data .how-bg-media { object-position: 30% 55%; }
+.how-bg-data::before { background: radial-gradient(55% 45% at 22% 30%, rgb(28 19 13 / .55), transparent 75%), linear-gradient(180deg, rgb(28 19 13 / .3) 0%, rgb(28 19 13 / .45) 45%, rgb(28 19 13 / .75) 100%); }
+.how-bg-train::before { background: radial-gradient(45% 45% at 90% 45%, rgb(200 105 61 / .18), transparent 70%), rgb(28 19 13 / .78); }
+.how-bg-models .how-bg-media { object-position: 70% 60%; }
+.how-bg-models::before { background: linear-gradient(90deg, rgb(28 19 13 / .78) 0%, rgb(28 19 13 / .5) 55%, rgb(28 19 13 / .35) 100%); }
+@media (prefers-reduced-motion: reduce) { .how-bg-media { display: none; } }
 .how-aim { display: grid; gap: 18px; max-width: 760px; }
 .how-aim p { margin: 0; color: var(--cream-2); font-size: 17px; line-height: 1.65; }
 .how-aim .lede { max-width: none; color: var(--cream); }
@@ -732,3 +753,5 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
   .result-top { flex-wrap: wrap; }
   .ruler-value input { font-size: 28px; }
 }
+.how-bg-findings::before { background: linear-gradient(90deg, rgb(28 19 13 / .8) 0%, rgb(28 19 13 / .55) 55%, rgb(28 19 13 / .4) 100%); }
+.how-bg-glossary::before { background: rgb(28 19 13 / .7); }
