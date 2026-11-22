@@ -49,7 +49,7 @@ const TRIED = [
   ['Small network we trained from scratch', '61'],
   ['ResNet-18, fine-tuned on our photos', '79'],
   ['CLIP (OpenAI, 400 M captioned photos)', '80'],
-  ['DINOv2 (Meta, 142 M photos), used in the app', '84'],
+  ['DINOv2 (Meta, 142 M photos), used in the local app', '84'],
 ]
 
 const FINDINGS = [
@@ -153,7 +153,7 @@ export default function HowPage() {
           <div className="how-tried surface">
             <h3>Photo models we compared (score out of 100 for the type, same Amazon listings)</h3>
             <ul>{TRIED.map(([name, score]) => <li key={name}><span>{name}</span><i style={{ width: `${score}%` }} /><b>{score}</b></li>)}</ul>
-            <p>A bigger, better pretrained model helped more than training a weaker one further. Price models compared: median price of the type, ridge regression, random forest, gradient boosting, LightGBM, SVR, and a pretrained text encoder (multilingual-e5) for the names.</p>
+            <p>A bigger, better pretrained model helped more than training a weaker one further. The online demo answers photos with the frozen ResNet-18, because its free server has only 512 MB of memory and DINOv2 does not fit; the app run locally (<code>python api.py</code>) uses DINOv2. Each answer names the model that gave it. Price models compared: median price of the type, ridge regression, random forest, gradient boosting, LightGBM, SVR, and a pretrained text encoder (multilingual-e5) for the names.</p>
           </div>
         </Reveal>
       </section>

@@ -3,6 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 import io
+import os
 
 import joblib
 import numpy as np
@@ -30,13 +31,21 @@ ROOT = Path(__file__).resolve().parent
 DIST = ROOT / "frontend" / "dist"
 
 
+# DINOv2 replaced ResNet-18 after the survey (final.ipynb 5.6: CV macro-F1 0.844 vs 0.766 photo only).
+# PHOTO_ENCODER=resnet18 keeps the earlier ResNet-18 models: the free Render server (512 MB) runs out of
+# memory with DINOv2, so the online demo uses them; the local app uses DINOv2.
+PHOTO_ENCODER = os.environ.get("PHOTO_ENCODER", "dinov2")
+PHOTO_FILES = {"dinov2": ("abo_photo_dinov2", "abo_specs_photo_dinov2"), "resnet18": ("abo_photo", "abo_specs_photo")}
+PHOTO_LABEL = {"dinov2": "DINOv2", "resnet18": "ResNet-18"}[PHOTO_ENCODER]
+
+
 @lru_cache(maxsize=1)
 def load_models():
+    photo, combined = PHOTO_FILES[PHOTO_ENCODER]
     return (
         joblib.load(ROOT / "models" / "structured_best.joblib"),
-        # DINOv2 replaced ResNet-18 after the survey (final.ipynb 5.6: CV macro-F1 0.844 vs 0.766 photo only)
-        joblib.load(ROOT / "models" / "abo_photo_dinov2.joblib"),
-        joblib.load(ROOT / "models" / "abo_specs_photo_dinov2.joblib"),
+        joblib.load(ROOT / "models" / f"{photo}.joblib"),
+        joblib.load(ROOT / "models" / f"{combined}.joblib"),
         joblib.load(ROOT / "models" / "structured_noprice.joblib"),
     )
 
@@ -104,7 +113,7 @@ async def health(_request):
     try:
         load_models()
         load_price_model()
-        return JSONResponse({"status": "ready", "models": 5})
+        return JSONResponse({"status": "ready", "models": 5, "photo_encoder": PHOTO_ENCODER})
     except FileNotFoundError:
         return JSONResponse({"status": "missing_models"}, status_code=503)
 
@@ -191,13 +200,13 @@ async def predict_photo(request: Request):
 
         _, photo_model, combined, _ = load_models()
         embedding = pd.DataFrame(
-            encoder_features(photo_model["encoder"], tensor), columns=photo_model["embedding_columns"]
+            encoder_features(photo_model.get("encoder", "resnet18"), tensor), columns=photo_model["embedding_columns"]
         )
         use_specs = str(form.get("use_specs", "false")).lower() == "true"
         if not use_specs:
             pipe = photo_model["pipeline"]
             payload = probability_payload(pipe, pipe.predict_proba(embedding)[0], "ABO photo")
-            payload["model"] = "DINOv2 features + logistic regression"
+            payload["model"] = f"{PHOTO_LABEL} features + logistic regression"
             payload["cv_macro_f1"] = float(photo_model["cv_macro_f1"])
             return JSONResponse(payload)
 
@@ -215,7 +224,7 @@ async def predict_photo(request: Request):
         inputs = pd.concat([specs.reset_index(drop=True), embedding], axis=1)
         pipe = combined["pipeline"]
         payload = probability_payload(pipe, pipe.predict_proba(inputs)[0], "ABO photo + specifications")
-        payload["model"] = "DINOv2 features + specifications, logistic regression"
+        payload["model"] = f"{PHOTO_LABEL} features + specifications, logistic regression"
         payload["cv_macro_f1"] = float(combined["cv_macro_f1"])
         return JSONResponse(payload)
     except (ValueError, KeyError, Image.UnidentifiedImageError) as exc:

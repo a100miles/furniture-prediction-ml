@@ -64,6 +64,8 @@ cd ..
 
 On Windows, replace `.venv/bin/python` with `.venv/Scripts/python.exe`, then open `http://127.0.0.1:8000`.
 
+* Online demo: https://furniture-model-studio.onrender.com (Render free plan, `render.yaml`; it sleeps when unused, so the first request can take about a minute). Its 512 MB of memory is not enough for DINOv2, so it sets `PHOTO_ENCODER=resnet18` and answers photos with the earlier ResNet-18 models; the local app uses DINOv2. Each answer names its model.
+
 * To rebuild `abo_furniture.csv` from scratch, download ABO's 16 listing files to `data/external/abo/listings/` first and run `scraper/build_abo.py` (see `DATA_CARD.md`).
 * `final.ipynb` takes about 15 minutes when `data/cache/` is present. Without it, the ResNet-18 features (about 10 minutes), the ABO cross-validation with the small CNN (about 40 minutes, CPU) and the name embeddings (2 minutes, plus a one-time ~470 MB model download from Hugging Face) are computed again. The stronger photo models of section 5.6 (`tools/abo_encoders_experiment.py`: CLIP and DINOv2 features about 20 minutes, one-time downloads of ~600 MB and ~90 MB; fine-tuning ResNet-18 about 50 minutes) are re-created from `data/cache/abo_oof_v2.npz` when it is present.
 * Every random step uses seed 42. Section 7.2 reports how much the CV scores move with other fold cuts.
