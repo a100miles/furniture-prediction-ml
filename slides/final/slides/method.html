@@ -11,5 +11,5 @@
 </div>
 <p class="lead" style="width: 1600px;">Libraries: scikit-learn, LightGBM, PyTorch / torchvision, Hugging Face transformers, sentence-transformers. The chosen models are saved with joblib and served by the app (Starlette API + React).</p>
 <div class="foot"><p>final.ipynb, sections 0, 1.3, 1.6, 7 and 8; furniture/price.py</p><p class="pg"></p></div>
-<aside>Tamerlan (about 40 seconds). Every model goes through the same recipe. Sizes are scaled, colour and type one-hot encoded, the price is predicted on a log scale, the name becomes TF-IDF or embedding vectors and a photo becomes the vector of a frozen network. The 793 test listings are locked away, and all colours of one design stay on the same side. Settings are searched with grouped 5-fold cross-validation inside one pipeline, the winner is picked by its CV mean and runs on the test set once. Then we check per-class scores, leakage through design names, other fold seeds and other stores.</aside>
+<aside>Tamerlan (about 30 seconds). One recipe for every model: scaled sizes, one-hot colour and type, log price, the name as TF-IDF or embeddings, a photo as a frozen network’s vector. The 793 test listings are locked away and a design never crosses the split. Settings are chosen by grouped 5-fold CV inside one pipeline, and the winner runs on the test set once.</aside>
 </section>

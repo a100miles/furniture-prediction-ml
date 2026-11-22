@@ -6,7 +6,7 @@ Sultanbek (about 15 seconds). Introduce the team and the one-line story: the typ
 
 ## Slide 2 (question)
 
-Sultanbek (about 1 minute). At the Endterm we predicted the type with 0.97. The teacher pointed out that three sizes alone already give 0.92, and we confirmed it on our own split: 0.918. A sofa and a wardrobe are told apart by their shape, so photos could only fix a few border cases. The teacher suggested price on the same listings and test set, and that is our main question now. Price is different: two sofas of the same size can differ three times in price.
+Sultanbek (about 45 seconds). At the Endterm we predicted the type with 0.97. The teacher pointed out that three sizes alone already give 0.92, and we confirmed it on our split: 0.918. The type is a question of shape, so photos could only fix a few border cases. The teacher suggested price on the same listings and test set, and that is our main question now: two sofas of the same size can differ three times in price.
 
 ## Slide 3 (existing)
 
@@ -14,23 +14,23 @@ Sultanbek (about 15 seconds). Two price works shaped the method: the IKEA tutori
 
 ## Slide 4 (data)
 
-Tamerlan (about 1 minute). The store’s copyright notice covers photos and page text, so we use neither. Product names are short factual labels, like the sizes, and they belong to exactly the same listings, so they give us a second source on the same test objects. Amazon Berkeley Objects is CC BY 4.0, but it is other products without price, so we use it only for the type. The split is the same as since the Midterm: 793 test listings, 92 designs, groups keep colour variants together, seed 42.
+Tamerlan (about 45 seconds). The store’s copyright notice covers photos and page text, so we use neither. Product names are short factual labels on exactly the same listings, so they are our second source on the same test objects. Amazon Berkeley Objects is CC BY 4.0, but other products without price, so it is only for the type. The split is unchanged since the Midterm: 793 test listings, 92 designs, colour variants kept together, seed 42.
 
 ## Slide 5 (models)
 
-Sultanbek (about 45 seconds). This is the whole model zoo on one slide. For the type we compared seven classifiers, from a dummy baseline and a decision tree to an SVM, random forest, gradient boosting and a small neural network; the SVM won in cross-validation. For the price, six regressors on the specifications; LightGBM, a boosted-trees library, was best. Then the same regressors with the product name, either as our own TF-IDF word and character pieces or as vectors from a pretrained multilingual encoder; an SVR on our TF-IDF features won. For photos, a small CNN we trained ourselves against three pretrained networks, ResNet-18, CLIP and DINOv2, used frozen with a logistic regression on top, plus a fine-tuned ResNet-18. DINOv2 won.
+Sultanbek (about 30 seconds). All models on one slide. Type: seven classifiers, the SVM won in cross-validation. Price: six regressors on the specifications, LightGBM best; with the name, our own TF-IDF features against a pretrained multilingual encoder, and an SVR on TF-IDF won. Photos: our small CNN against frozen ResNet-18, CLIP and DINOv2, plus a fine-tuned ResNet-18; DINOv2 won.
 
 ## Slide 6 (method)
 
-Tamerlan (about 40 seconds). Every model goes through the same recipe. Sizes are scaled, colour and type one-hot encoded, the price is predicted on a log scale, the name becomes TF-IDF or embedding vectors and a photo becomes the vector of a frozen network. The 793 test listings are locked away, and all colours of one design stay on the same side. Settings are searched with grouped 5-fold cross-validation inside one pipeline, the winner is picked by its CV mean and runs on the test set once. Then we check per-class scores, leakage through design names, other fold seeds and other stores.
+Tamerlan (about 30 seconds). One recipe for every model: scaled sizes, one-hot colour and type, log price, the name as TF-IDF or embeddings, a photo as a frozen network’s vector. The 793 test listings are locked away and a design never crosses the split. Settings are chosen by grouped 5-fold CV inside one pipeline, and the winner runs on the test set once.
 
 ## Slide 7 (type)
 
-Sultanbek (about 1 minute 15 seconds). The Endterm feedback asked us to check colour variants. Our grouping missed 44 test listings whose twin was in training. With a stricter grouping the random forest fell from 0.958 to 0.933 and the SVM, 0.949, became the chosen model. Counting each design once, the test score is 0.940. Coffee tables are only 4% but have PR-AUC 0.991; the weak classes are TV stands, desks and chests. And the model does not travel: on Amazon listings it scores 0.606.
+Sultanbek (about 1 minute). The Endterm feedback asked us to check colour variants: 44 test listings had a twin in training. With a stricter grouping the random forest fell from 0.958 to 0.933, and the SVM, 0.949, became the chosen model; per design the test score is 0.940. Coffee tables are only 4% but have PR-AUC 0.991; the weak classes are TV stands, desks and chests. And the model does not travel: 0.606 on Amazon listings.
 
 ## Slide 8 (price)
 
-Sultanbek (about 1 minute 45 seconds). Same 3,961 listings, same 793 test listings, same groups. The median price of the type gives an error of 95 thousand tenge. Specifications bring it to about 61 thousand; after the survey we added LightGBM, which is the best specifications model, but only by a hair: all tree, linear and kernel models are within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained e5 encoder adds less than our own features: names are short and full of shop words and sizes. And the same holds in a second market: on IKEA Saudi Arabia the name brings the error from 47 to 40 percent.
+Sultanbek (about 1 minute 30 seconds). Same listings, same 793 test listings, same groups. The median price of the type is off by 95 thousand tenge; specifications bring it to about 61 thousand, and all tree, linear and kernel models, LightGBM included, are within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained e5 encoder adds less: names are short and full of shop words. On IKEA Saudi Arabia the name also helps, from 47 to 40 percent error.
 
 ## Slide 9 (check)
 
@@ -42,11 +42,11 @@ Tamerlan (about 30 seconds). The name helps where the specs miss the function: s
 
 ## Slide 11 (photos)
 
-Tamerlan (about 1 minute). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662. Our own small CNN, trained from scratch, underfits at 0.605. After the survey we tried stronger models on the same folds: fine-tuning ResNet-18 gives 0.789, CLIP 0.801, and a frozen DINOv2 0.844, or 0.851 with the specifications; TV stands go from 8 to 78 percent found. A better pretrained encoder helped more than training a weaker one further. DINOv2 also recognised IKEA photos it had never seen, 0.880. This is on other products, without price.
+Tamerlan (about 45 seconds). mebel.kz photos are not allowed, so we tested the photo idea on Amazon Berkeley Objects. On the same listings a frozen ResNet-18 beats the specifications, 0.766 versus 0.662, while our own small CNN underfits at 0.605. A stronger pretrained encoder helped most: DINOv2 reaches 0.844, 0.851 with the specifications, and TV stands go from 8 to 78 percent found. This is on other products, without price.
 
 ## Slide 12 (demo)
 
-Tamerlan (about 1 minute). Open the Predict page. Price mode: load the Sofa example, predict without a name, then type the name and predict again; point at the plus-minus error and the 8-in-10 range. Type a made-up name like asdkjh and show that the app falls back to the specifications and says why. Then From specifications: switch off the price and predict; type a width of 2000 and show the error message. Switch to From a photo, drop one chair photo, predict. If time allows, open How it works for one second. Start the server before the talk (python api.py) and keep the page open in a tab. If the demo fails, go back to the price slide and say what the app would show.
+Tamerlan (about 1 minute). Start the server before the talk (python api.py) and keep the page open. Price mode: load the Sofa example, predict without a name, then with the name; point at the error and the 8-in-10 range. Type a width of 2000 and show the error message. Switch to From a photo, drop one chair photo, predict. If the demo fails, go back to the price slide and say what the app would show.
 
 ## Slide 13 (conclusions)
 
