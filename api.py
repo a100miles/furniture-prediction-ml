@@ -33,8 +33,8 @@ DIST = ROOT / "frontend" / "dist"
 
 # DINOv2 replaced ResNet-18 after the survey (final.ipynb 5.6: CV macro-F1 0.844 vs 0.766 photo only).
 # PHOTO_ENCODER=resnet18 keeps the earlier ResNet-18 models: the free Render server (512 MB) runs out of
-# memory with DINOv2, so the online demo uses them; the local app uses DINOv2.
-PHOTO_ENCODER = os.environ.get("PHOTO_ENCODER", "dinov2")
+# memory with DINOv2, so the online demo uses them (Render sets RENDER=true); the local app uses DINOv2.
+PHOTO_ENCODER = os.environ.get("PHOTO_ENCODER") or ("resnet18" if os.environ.get("RENDER") else "dinov2")
 PHOTO_FILES = {"dinov2": ("abo_photo_dinov2", "abo_specs_photo_dinov2"), "resnet18": ("abo_photo", "abo_specs_photo")}
 PHOTO_LABEL = {"dinov2": "DINOv2", "resnet18": "ResNet-18"}[PHOTO_ENCODER]
 

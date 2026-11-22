@@ -16,7 +16,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.11
-      - key: PHOTO_ENCODER         # DINOv2 (the local app's photo model) ran out of memory here on 22 Nov 2026
+      - key: PHOTO_ENCODER         # DINOv2 ran out of memory here on 22 Nov 2026 (api.py also picks resnet18 when RENDER is set)
         value: resnet18
       - key: TORCH_HOME            # ResNet-18 weights are downloaded at build time into the project folder
         value: /opt/render/project/src/.torch-cache
