@@ -4,7 +4,7 @@ services:
   - type: web
     name: furniture-model-studio
     runtime: python
-    plan: free            # 512 MB; the app needs about 500 MB after a photo prediction
+    plan: free            # 512 MB; the app needs about 500 MB after a ResNet-18 photo prediction
     region: frankfurt
     branch: a100miles
     buildCommand: >-
@@ -16,6 +16,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.11
+      - key: PHOTO_ENCODER         # DINOv2 ran out of memory here on 22 Nov 2026 (api.py also picks resnet18 when RENDER is set)
+        value: resnet18
       - key: TORCH_HOME            # ResNet-18 weights are downloaded at build time into the project folder
         value: /opt/render/project/src/.torch-cache
       - key: OMP_NUM_THREADS       # one thread and fewer allocator arenas keep memory under 512 MB

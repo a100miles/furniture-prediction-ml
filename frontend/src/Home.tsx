@@ -7,18 +7,19 @@ import { Link } from './router'
 const STEPS = [
   { n: '01', title: 'Specifications', text: 'Width, depth, height, materials, colour and type from 3,961 mebel.kz listings. Colour variants of one design stay on the same side of the split.' },
   { n: '02', title: 'Product names', text: 'The second source for price, on the same listings and test set: TF-IDF word pieces we fit ourselves against a pretrained multilingual-e5 encoder, with the design name masked as a leakage check.' },
-  { n: '03', title: 'Photos', text: 'Licensed catalogue photos from Amazon Berkeley Objects for the type: a pretrained ResNet-18 against a small CNN trained from scratch. Every comparison uses the same objects and grouped cross-validation.' },
+  { n: '03', title: 'Photos', text: 'Licensed catalogue photos from Amazon Berkeley Objects for the type. Pretrained networks (ResNet-18, CLIP, DINOv2) against a small network trained from scratch; the best, DINOv2, was also tested on IKEA photos it had never seen.' },
 ]
 
 const RESULTS = [
-  { value: 0.918, decimals: 3, label: 'Type from three sizes alone', note: 'Test macro-F1: the type is mostly a size question' },
-  { value: 22.1, decimals: 1, suffix: '%', label: 'Price error, specifications only', note: 'Test MAPE, random forest, 793 listings' },
-  { value: 0.794, decimals: 3, label: 'Type from specs + photo on Amazon', note: 'Grouped CV macro-F1, up from 0.662 with specs alone' },
+  { value: 92, decimals: 0, suffix: ' / 100', label: 'Type from width, depth and height alone', note: 'Score on 793 listings the model never saw: the type is mostly a question of size (macro-F1 0.918)' },
+  { value: 22.1, decimals: 1, suffix: '%', label: 'Typical price error from the specifications', note: 'Average gap to the real price on the same 793 listings (LightGBM, MAPE)' },
+  { value: 85, decimals: 0, suffix: ' / 100', label: 'Type from a photo + sizes, Amazon', note: 'Up from 66 with sizes alone; pretrained DINOv2 (macro-F1 0.851)' },
 ]
 
 const LOGOS = [
   { src: '/logos/mebel-kz.svg', alt: 'mebel.kz', h: 14 },
   { src: '/logos/amazon.png', alt: 'Amazon', h: 16 },
+  { src: '/logos/ikea.svg', alt: 'IKEA', h: 16 },
 ]
 
 // Infinite logo strip: the track holds two identical halves and slides by -50%.
@@ -80,14 +81,15 @@ export default function Home() {
           <MaskedLines as="h1" lines={['Furniture,', 'read by a model.']} className="display" start={280} immediate />
           <Reveal delay={620}>
             <p className="lede">
-              Give it the sizes, materials and name of a listing and it estimates the price; give it the sizes or
-              a single product photo and it tells you what kind of furniture it is and how sure it is.
+              Describe a piece of furniture or upload a photo. The model tells you what it is and what it usually costs.
             </p>
           </Reveal>
           <Reveal delay={780}>
-            <Magnetic>
-              <Link to="/predict" className="glass-btn">Predict <ArrowRight size={17} /></Link>
-            </Magnetic>
+            <div className="hero-btns">
+              <Magnetic>
+                <Link to="/predict" className="glass-btn">Predict <ArrowRight size={17} /></Link>
+              </Magnetic>
+            </div>
           </Reveal>
         </div>
       </section>
@@ -128,7 +130,7 @@ export default function Home() {
             <Reveal delay={160}>
               <div className="big-stat">
                 <span className="big-num"><CountUp value={20.6} decimals={1} duration={1800} />%</span>
-                <span className="big-cap">test price error (MAPE) from specifications + product name,<br />down from <b>22.1%</b> with specifications alone</span>
+                <span className="big-cap">average price error on 793 unseen listings with the specifications + product name,<br />down from <b>22.1%</b> with the specifications alone</span>
               </div>
             </Reveal>
             <Reveal delay={260}>
@@ -156,7 +158,7 @@ export default function Home() {
           <Reveal><p className="eyebrow">Data and rights</p></Reveal>
           <MaskedLines lines={['Only data we may', 'lawfully use.']} className="title" />
         </div>
-        <div className="cards">
+        <div className="cards cards-4">
           <Reveal>
             <Tilt className="card surface">
               <div className="card-fig"><b>3,961</b><span>listings, no photos</span></div>
@@ -170,6 +172,13 @@ export default function Home() {
               <h3>Amazon Berkeley Objects</h3>
               <p>3,371 furniture listings with catalogue photos under CC BY 4.0. Credit: Amazon.com; dataset by Guillaumin et al. and Collins &amp; Malik (UC Berkeley).</p>
               <a href="https://amazon-berkeley-objects.s3.amazonaws.com/index.html" target="_blank" rel="noreferrer">Dataset page <ArrowUpRight size={14} /></a>
+            </Tilt>
+          </Reveal>
+          <Reveal delay={180}>
+            <Tilt className="card surface">
+              <div className="card-fig"><b>620 + 221</b><span>IKEA items · photos</span></div>
+              <h3>IKEA, as a check</h3>
+              <p>620 IKEA Saudi Arabia listings (price, sizes) test the price finding in a second market; 221 IKEA catalogue photos (non-commercial use) test the photo models on photos they never saw. Neither is used to train the app's models.</p>
             </Tilt>
           </Reveal>
           <Reveal delay={240}>

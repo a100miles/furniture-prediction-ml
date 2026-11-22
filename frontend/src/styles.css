@@ -655,12 +655,94 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
 .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ---------- How it works page (dark, plain-language explainer) ---------- */
+.how { background: var(--night); color: var(--cream); }
+.how .eyebrow { color: var(--cream-2); }
+.how .title { color: #fdf3e6; }
+.how-hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: max(620px, 92svh); align-content: center;
+  padding: clamp(120px, 16vw, 190px) var(--gutter) clamp(120px, 14vw, 180px); display: grid; gap: 26px;
+}
+.how-hero-media { position: absolute; inset: 0; z-index: -3; }
+.how-hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 70%; filter: saturate(1.05) sepia(.12); }
+/* section backgrounds reused from the home page; faded at top and bottom so joins stay plain espresso */
+.how-bg { position: relative; isolation: isolate; overflow: hidden; padding-bottom: clamp(80px, 11vw, 140px); }
+.how-bg-media {
+  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(1.05) sepia(.12);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+.how-bg::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.how-bg-data .how-bg-media { object-position: 30% 55%; }
+.how-bg-data::before { background: radial-gradient(55% 45% at 22% 30%, rgb(28 19 13 / .55), transparent 75%), linear-gradient(180deg, rgb(28 19 13 / .3) 0%, rgb(28 19 13 / .45) 45%, rgb(28 19 13 / .75) 100%); }
+.how-bg-train::before { background: radial-gradient(45% 45% at 90% 45%, rgb(200 105 61 / .18), transparent 70%), rgb(28 19 13 / .78); }
+.how-bg-models .how-bg-media { object-position: 70% 60%; }
+.how-bg-models::before { background: linear-gradient(90deg, rgb(28 19 13 / .78) 0%, rgb(28 19 13 / .5) 55%, rgb(28 19 13 / .35) 100%); }
+@media (prefers-reduced-motion: reduce) { .how-bg-media { display: none; } }
+.how-aim { display: grid; gap: 18px; max-width: 760px; }
+.how-aim p { margin: 0; color: var(--cream-2); font-size: 17px; line-height: 1.65; }
+.how-aim .lede { max-width: none; color: var(--cream); }
+.how-aim b, .how b { color: #fdf3e6; }
+.how-aim .glass-btn { justify-self: start; }
+.how-block { padding-bottom: 0; }
+.how-last { padding-bottom: clamp(80px, 11vw, 140px); }
+.cards-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.how-when { font: 400 12px/1.3 var(--mono) !important; letter-spacing: .04em; color: var(--honey) !important; }
+.how-rights { font-size: 13.5px !important; }
+.how-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.how-steps li { display: grid; align-content: start; gap: 10px; padding: 26px; border-radius: 22px; height: 100%; }
+.how-steps h3, .how-item h3, .how-limits h3, .how-tried h3 { margin: 0; font: 400 21px/1.25 var(--display); color: #fdf3e6; }
+.how-steps p, .how-item p { margin: 0; color: var(--cream-2); font-size: 15px; line-height: 1.6; }
+.how-n { font: 400 13px/1 var(--mono); color: var(--honey); }
+.how-table-wrap { overflow-x: auto; border: 1px solid rgb(255 240 222 / .12); border-radius: 22px; }
+.how-table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 14.5px; line-height: 1.5; }
+.how-table th { text-align: left; padding: 16px 18px; font: 400 11.5px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--cream-2); border-bottom: 1px solid rgb(255 240 222 / .12); }
+.how-table td { padding: 16px 18px; vertical-align: top; color: var(--cream-2); border-bottom: 1px solid rgb(255 240 222 / .07); }
+.how-table td:first-child { color: #fdf3e6; }
+.how-table tr:last-child td { border-bottom: 0; }
+.how-score { color: var(--honey) !important; white-space: nowrap; }
+.how-tech { font: 400 12.5px/1.45 var(--mono); }
+.how-tried { margin-top: 16px; padding: 26px; border-radius: 22px; display: grid; gap: 14px; }
+.how-tried ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.how-tried li { display: grid; grid-template-columns: minmax(180px, 330px) 1fr 34px; align-items: center; gap: 14px; font-size: 14.5px; color: var(--cream-2); }
+.how-tried li i { display: block; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--clay-deep), var(--honey)); }
+.how-tried li b { text-align: right; font-family: var(--mono); }
+.how-tried p { margin: 0; color: var(--cream-2); font-size: 14px; line-height: 1.6; }
+.how-two { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 48px); align-items: start; }
+.how-list { display: grid; gap: 26px; }
+.how-item { display: grid; gap: 8px; padding-left: 18px; border-left: 2px solid var(--clay); }
+.how-limits { padding: 26px; border-radius: 22px; }
+.how-limits ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 10px; color: var(--cream-2); font-size: 14.5px; line-height: 1.6; }
+.how-glossary { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.how-glossary > div > div { padding: 22px; border-radius: 18px; height: 100%; }
+.how-glossary .gl-term { margin: 0 0 6px; color: #fdf3e6; font: 400 16px/1.3 var(--display); }
+.how-glossary .gl-text { margin: 0; color: var(--cream-2); font-size: 14.5px; line-height: 1.6; }
+.how-source { margin: 28px 0 0; color: var(--cream-2); font-size: 14px; }
+
+.hero-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+.text-link { display: inline-flex; align-items: center; gap: 6px; color: var(--cream); font-size: 15.5px; border-bottom: 1px solid rgb(246 234 218 / .35); padding-bottom: 2px; transition: border-color .4s var(--ease), color .4s var(--ease); }
+.text-link:hover { color: #fff; border-color: var(--honey); }
+.fine a { color: var(--honey); text-decoration: underline; text-underline-offset: 3px; }
+
+/* plain-language result lines on the Predict page */
+.plain { margin: 0; font-size: 15px; line-height: 1.55; color: var(--cream); }
+.plain b { color: var(--honey); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 980px) {
   .workbench { grid-template-columns: 1fr; }
   .stage-wrap { position: static; order: -1; }
   .story-inner { grid-template-columns: 1fr; }
     .msteps, .cards, .stat-row { grid-template-columns: 1fr; }
+  .cards-4, .how-steps, .how-glossary { grid-template-columns: 1fr 1fr; }
+  .how-two { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .cards-4, .how-steps, .how-glossary { grid-template-columns: 1fr; }
+  .how-tried li { grid-template-columns: 1fr 34px; }
+  .how-tried li i { grid-column: 1 / -1; grid-row: 2; }
 }
 @media (max-width: 600px) {
   .nav nav a { padding: 7px 8px; font-size: 13px; }
@@ -671,3 +753,5 @@ blockquote { margin: 0; padding-left: 18px; border-left: 2px solid var(--honey);
   .result-top { flex-wrap: wrap; }
   .ruler-value input { font-size: 28px; }
 }
+.how-bg-findings::before { background: linear-gradient(90deg, rgb(28 19 13 / .8) 0%, rgb(28 19 13 / .55) 55%, rgb(28 19 13 / .4) 100%); }
+.how-bg-glossary::before { background: rgb(28 19 13 / .7); }

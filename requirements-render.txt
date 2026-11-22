@@ -11,3 +11,9 @@ pillow==13.0.0
 starlette==1.10.0
 uvicorn==0.54.0
 python-multipart==0.0.34
+lightgbm==4.7.0
+# local photo mode uses DINOv2 through transformers; the Render demo sets PHOTO_ENCODER=resnet18 (512 MB limit)
+transformers==5.24.0
+huggingface-hub==2.4.0
+tokenizers==0.23.3
+safetensors==0.8.0

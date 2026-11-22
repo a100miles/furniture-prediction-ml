@@ -113,5 +113,30 @@ Chosen because the mebel.kz photos may not be reused (see above).
 * **Class balance:** sofa 1,047, armchair 965, chair 607, bed 259, coffee table 202, desk 136, wardrobe 66, chest of drawers 53, TV stand 36. The three case-furniture classes we care most about are the smallest.
 * **Duplicates:** the same product is often listed on several marketplaces (614 repeated model numbers, 328 repeated main photos). Listings that share a model number or a photo are one group in every split.
 
+## Third and fourth sources (added 22 November 2026, after a user survey): IKEA
+A small survey of the app found that "the models and the size of the data" were the main weakness. Two IKEA
+sources were added as **supporting evidence in other markets**. Neither belongs to the mebel.kz listings, so neither
+changes the main comparison (same 793 test listings); both are evaluated on their own with grouped CV or as an
+outside test. Built by `scraper/build_ikea.py`.
+
+### IKEA Saudi Arabia listings (price)
+* **What:** furniture listings scraped from ikea.com/sa on 20 April 2020 by A. Kallam (Kaggle "IKEA SA Furniture Web Scraping"), the copy used by TidyTuesday (2020-11-03): https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-11-03/ikea.csv
+* **Rights:** the TidyTuesday readme states **no licence for the IKEA data** (the repository's CC0 covers the repository's own material, not IKEA's). We treat it as we treat mebel.kz: we use measured **facts** (price, three sizes, category) and the short product label, for a non-commercial course project; we do not use IKEA's photos or page text from this source. This is weaker than ABO's explicit licence, which is why IKEA SA is used only as a second-market check, not for the main result.
+* **Downloaded on 22 November 2026** to `data/external/ikea_sa/ikea.csv` (3,694 rows, 2,962 unique items; not in the submission archive, re-downloaded by the script).
+* **Table:** `data/processed/ikea_sa.csv`, **620 items in 147 product lines**: items mapped to our types from the first words of the short description (e.g. "Chest of 6 drawers", "TV bench", "3-seat sofa"; covers, legs, cots, footstools and dining sets skipped), kept only with all three sizes (808 typed, 188 without a depth or height dropped). wardrobe 179, sofa 144, chest of drawers 84, chair 77, TV stand 49, armchair 37, bed 28, desk 22; **no coffee tables** survive the size filter.
+* **Price:** SAR, one day (20 April 2020). **Groups:** all items of one product line (e.g. every HEMNES item) are one group, so a line's price level cannot be copied across a split.
+* **Text input:** product line name + short description ("HEMNES Chest of 8 drawers, 160x96 cm"), the counterpart of the mebel.kz product name.
+
+### IKEA catalogue photos (photo models, outside test)
+* **What:** IKEA product photos collected from IKEA.com by Tautkute et al. (2017) for a style search engine: https://github.com/IvonaTau/ikea (paper: "What Looks Good with my Sofa: Multimodal Search Engine for Interior Design", FedCSIS 2017).
+* **Rights:** the README states: *"all images are property of IKEA.COM and are only allowed for non-commercial use."* There is no licence file. Our use is non-commercial (course project) and the photos are **not redistributed**: they are not in the submission archive and are downloaded by the script. **Weakness, stated openly:** the permission is the dataset authors' statement, not a licence from IKEA itself. This is why the photos are used only as a small outside test of models trained on ABO, never for training.
+* **Downloaded on 22 November 2026** to `data/external/ikea_images/`: only photos we can label, **221 photos**: the repository's `bed` (54), `chair` (106) and `couch` (40, = sofa) folders, plus 21 product photos whose IKEA article number (file name, e.g. `902.290.17`) is an IKEA SA item of one of our types (wardrobe 7, desk 8, chest of drawers 4, TV stand 2). Manifest: `data/processed/ikea_images.csv`.
+* **Not used:** the repository's label files are Python pickles (`.p`); they were **not downloaded or opened**, because loading a pickle from the internet can run arbitrary code. Room scenes and unlabelled object photos are not used.
+* **Photo and price on the same IKEA item:** only 192 of the 2,962 IKEA SA items have a photo in this collection (34 chairs, 40 tables, 23 beds, ...). Too few for a fair price-from-photo model, so not attempted.
+
+### Pretrained encoders added with these sources
+* **CLIP ViT-B/32** (`openai/clip-vit-base-patch32`, MIT licence) and **DINOv2 ViT-S/14** (`facebook/dinov2-small`, Apache 2.0), downloaded from Hugging Face on first use (~600 MB and ~90 MB, not in the archive). Used frozen, like ResNet-18; features cached in `data/cache/`.
+* **LightGBM** (MIT licence), gradient-boosted trees for the price models.
+
 ## Ethics
 Only public catalogue data was collected: no accounts, no personal data, no reviews. The collection was rate-limited and identified itself. The data is used for a university course project only.

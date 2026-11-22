@@ -22,11 +22,11 @@ Sultanbek (about 1 minute 15 seconds). The Endterm feedback asked us to check co
 
 ## Slide 6 (price)
 
-Sultanbek (about 1 minute 45 seconds). Same 3,961 listings, same 793 test listings, same groups. The median price of the type gives an error of 95 thousand tenge. Specifications bring it to about 61 thousand: a random forest, boosting, SVR and ridge are all within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained multilingual e5 encoder adds less than our own features: names are short and full of shop-specific words like fabric names and sizes, which character pieces catch directly.
+Sultanbek (about 1 minute 45 seconds). Same 3,961 listings, same 793 test listings, same groups. The median price of the type gives an error of 95 thousand tenge. Specifications bring it to about 61 thousand; after the survey we added LightGBM, which is the best specifications model, but only by a hair: all tree, linear and kernel models are within the fold spread. Adding the name with our own TF-IDF features and an SVR gives 59 thousand in CV and 51.7 thousand on the test set, MAPE 20.6 versus 22.1 percent. The pretrained e5 encoder adds less than our own features: names are short and full of shop words and sizes. And the same holds in a second market: on IKEA Saudi Arabia the name brings the error from 47 to 40 percent.
 
 ## Slide 7 (check)
 
-Tamerlan (about 45 seconds). Two checks. First leakage: the name contains the design’s own name, which could give away its price. Our groups keep a design on one side of every split, and on top we masked the design name: three quarters of the gain stays. Second, run-to-run variation: with five other fold cuts, the name model wins in all six, by 2.4 to 4.1 thousand tenge. The gain is small, about 4 to 6 percent of the error, but it is not an accident of one split.
+Tamerlan (about 45 seconds). Two checks. First leakage: the name contains the design’s own name, which could give away its price. Our groups keep a design on one side of every split, and on top we masked the design name: three quarters of the gain stays. Second, run-to-run variation: with five other fold cuts, the name model wins in all six, by 1.5 to 4.3 thousand tenge over LightGBM. The gain is small, about 2 to 7 percent of the error, but it is not an accident of one split.
 
 ## Slide 8 (errors)
 
@@ -34,12 +34,12 @@ Tamerlan (about 30 seconds). The name helps where the specs miss the function: s
 
 ## Slide 9 (photos)
 
-Tamerlan (about 45 seconds). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662, and TV stands go from almost never found to mostly found. Our own small CNN, trained from scratch on about 2,700 products, underfits at 0.605. This is on other products, without price.
+Tamerlan (about 1 minute). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662. Our own small CNN, trained from scratch, underfits at 0.605. After the survey we tried stronger models on the same folds: fine-tuning ResNet-18 gives 0.789, CLIP 0.801, and a frozen DINOv2 0.844, or 0.851 with the specifications; TV stands go from 8 to 78 percent found. A better pretrained encoder helped more than training a weaker one further. DINOv2 also recognised IKEA photos it had never seen, 0.880. This is on other products, without price.
 
 ## Slide 10 (demo)
 
-Tamerlan (about 1 minute). Open the Predict page. Price mode: load the Sofa example, predict without a name, then type the name and predict again; point at the range and the CV error. Then type a width of 2000 and show the error message. Finally switch to From a photo, drop one chair photo, predict. Start the server before the talk (python api.py) and keep the page open in a tab. If the demo fails, go back to the price slide and say what the app would show.
+Tamerlan (about 1 minute). Open the Predict page. Price mode: load the Sofa example, predict without a name, then type the name and predict again; point at the plus-minus error and the 8-in-10 range. Type a made-up name like asdkjh and show that the app falls back to the specifications and says why. Then From specifications: switch off the price and predict; type a width of 2000 and show the error message. Switch to From a photo, drop one chair photo, predict. If time allows, open How it works for one second. Start the server before the talk (python api.py) and keep the page open in a tab. If the demo fails, go back to the price slide and say what the app would show.
 
 ## Slide 11 (conclusions)
 
-Sultanbek (about 45 seconds). Specifications predict the price within about a quarter; the name helps a little but steadily, and not by memorising designs. Our own TF-IDF features beat the pretrained encoder on these short names. The type is a size question and the model stays in its store. Limits: one store and one day, text instead of photos, CV slightly optimistic and a small test set of 92 designs. Thank you.
+Sultanbek (about 45 seconds). Specifications predict the price within about a quarter; the name helps a little but steadily, not by memorising designs, and it does so in a second market too. Our own TF-IDF features beat the pretrained encoder on these short names. The type is a size question and the model stays in its store. For photos, picking a stronger pretrained model mattered more than training our own. Limits: one store and one day, text instead of photos, CV slightly optimistic and a small test set of 92 designs. Thank you.

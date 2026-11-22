@@ -25,8 +25,9 @@ Team: Sultanbek Zhumagali, Tamerlan Yessimov (SE-2420)
 | 3 | Endterm: coffee tables are only 4% of the data, so report precision, recall and PR-AUC for this class separately. | 2 |
 | 4 | Endterm: keep the talk within the time. | slides / rehearsal |
 | 5 | 20 Nov: the type is almost fully decided by the sizes (three sizes alone give about 0.92); reformulate, for example as **price on the same listings and test set**, and explain the change. | 4, 7 |
+| 6 | 22 Nov, a small survey of people who used the app: the main weaknesses are the models and the size of the data. | 5.6, 5.7, 7, 7.4 |
 
-**Map of the notebook.** existing solutions · 0 setup · 1 colour variants and the new grouping · 2 per-class metrics · 3 data sources, rights, matching and missing inputs · 4 what the feedback changed and the new formulation · 5 photos on a second marketplace (ABO) · 6 the type model in another store · **7 price: specifications vs specifications + product name (main result)** · 8 saved models for the app · 9 conclusions.
+**Map of the notebook.** existing solutions · 0 setup · 1 colour variants and the new grouping · 2 per-class metrics · 3 data sources, rights, matching and missing inputs · 4 what the feedback changed and the new formulation · 5 photos on a second marketplace (ABO), with stronger encoders (5.6) and an outside test on IKEA photos (5.7) · 6 the type model in another store · **7 price: specifications vs specifications + product name (main result)**, with a second market, IKEA Saudi Arabia (7.4) · 8 saved models for the app · 9 conclusions.
 
 `endterm.ipynb` stays unchanged as the Endterm record. The data preparation lives in `furniture/features.py` and `furniture/price.py`, so this notebook and the app share it.
 """)
@@ -40,6 +41,8 @@ md("""
 | Mercari Price Suggestion Challenge (Kaggle, 2017-18); 1st place by K. Lakhman and P. Jankiewicz | Price of second-hand items from title, description, category, brand | Bag-of-words / TF-IDF of 1-2-word pieces and character n-grams, one-hot categories, small MLPs on the sparse features | Product **titles** carry price information cheaply. We use the same kind of features (TF-IDF words + character pieces) on mebel.kz names, with ridge regression and an SVR. |
 | L. Wang et al., *Multilingual E5 Text Embeddings* (arXiv:2402.05672, 2024) | Pretrained sentence encoder for about 100 languages, including Russian | Contrastive pre-training on 1 billion text pairs, then fine-tuning | Our **pretrained** text model: multilingual-e5-small (MIT licence), used frozen, followed by a regressor. |
 | J. Collins et al., *ABO: Dataset and Benchmarks for Real-World 3D Object Understanding* (CVPR 2022) | Amazon listings with catalogue photos, metadata and 3D models | Benchmarks for 3D reconstruction, material estimation and retrieval | Our photo source (section 5). The paper does not benchmark furniture-type classification, so there is no published number to compare ours to. |
+| A. Radford et al., *CLIP* (ICML 2021); M. Oquab et al., *DINOv2* (TMLR 2024) | General image features learned from hundreds of millions of photos (CLIP with captions, DINOv2 without labels) | Frozen encoder + linear classifier, reported to beat ImageNet features on many small classification sets | Added after the survey: the same "frozen features + logistic regression" recipe as ResNet-18, compared with fine-tuning ResNet-18 on our photos (5.6) and tested on IKEA photos (5.7). |
+| G. Ke et al., *LightGBM* (NeurIPS 2017) | Gradient-boosted decision trees for tabular data | Leaf-wise trees, column sampling; a common winner on tabular competitions | Added after the survey as a stronger boosting baseline for price from specifications (7). |
 | K. He et al., *Deep Residual Learning* (CVPR 2016), ResNet-18 trained on ImageNet | Image classification | Pretrained network as a fixed feature extractor + a linear classifier ("linear probe") | Our pretrained photo model (section 5), against a small CNN trained from scratch. |
 | Our Endterm (`endterm.ipynb`) | Type from mebel.kz specifications | Forest, boosting, SVM, MLP; grouped CV | Section 1 re-checks its grouping; the chosen model changes from the forest to the SVM. |
 """)
@@ -414,6 +417,9 @@ Checked on 19 November 2026, before downloading any photo. The full record is in
 | Amazon Berkeley Objects (ABO): listing metadata and 256 px catalogue photos | photos (5), cross-store test (6) | **CC BY 4.0** according to the dataset page and its licence file; credit Amazon.com and the dataset authors. (The CVPR paper states CC BY-NC 4.0; our use is non-commercial, so both are met.) | photos by ABO's own image ids per listing (`item_id` + marketplace); listings of one product grouped by item id, model number and shared photos | 3,332 of 3,371 listings have a usable photo (the rest are left out of the photo comparison). Sizes missing for 464 listings, weight for 321, materials for 1,330 (median imputation with a missing-value flag inside each training fold; materials as all-zero flags). **No price** in ABO. |
 | ResNet-18 ImageNet weights (torchvision) | photo features (5) | torchvision BSD-3 code; weights trained on ImageNet for research | - | - |
 | multilingual-e5-small weights (Hugging Face `intfloat/multilingual-e5-small`) | name embeddings (7) | MIT licence | - | - |
+| CLIP ViT-B/32 and DINOv2 ViT-S/14 weights (Hugging Face, added after the survey) | stronger photo features (5.6) | CLIP: MIT; DINOv2: Apache 2.0 | - | - |
+| **IKEA Saudi Arabia** listings (ikea.com/sa, April 2020; Kaggle, TidyTuesday copy; added after the survey) | price in a second market (7.4) | **No licence stated** for the data. Used like the mebel.kz table: measured facts (price, sizes, category) and the short product label, non-commercial course use; no IKEA photos or page text from this source | not matched to mebel.kz (other products); within IKEA, items of one product line form one group | 808 items of our types, 188 without a depth or height dropped (620 kept); no materials or colour fields; no coffee tables with all three sizes |
+| **IKEA catalogue photos** (Tautkute et al. 2017, GitHub; added after the survey) | outside test of the ABO photo models (5.7) | README: *"all images are property of IKEA.COM and are only allowed for non-commercial use"*; no licence file. Non-commercial use, not redistributed (not in the archive). The permission is the dataset authors' statement, not IKEA's: a weakness, so these photos are **only tested on, never trained on** | labels from the repository's folders (bed, chair, couch) or from the IKEA article number in the file name matched to an IKEA SA item; the repository's pickle label files were not opened (unsafe to load) | 221 photos can be labelled; most of the collection (room scenes, unlabelled objects) is not used |
 
 **The second source for price is on the same objects and the same split.** Names belong to exactly the listings, groups and 793 test URLs of sections 1-2, so section 7 compares *specifications* vs *specifications + name* on the same test objects. ABO photos cannot do that for mebel.kz (other products, no price); they test the photo hypothesis on their own listings.
 """)
@@ -427,6 +433,7 @@ md("""
 | Scores ≥ 0.95 | Per design, the best test macro-F1 is 0.94, not 0.97; the best models' errors sit in 6-9 of 92 designs | We report CV and per-design scores, and do not rank models on test differences of one or two designs. |
 | Coffee tables (4%) | CV precision 0.962, recall 0.940, PR-AUC 0.991 (SVM); test perfect but only 10 designs | Coffee tables are not a weak class. The weak classes are TV stand, desk and chest of drawers (CV F1 0.875-0.914). |
 | Photo terms | robots.txt allows image files, the site's copyright notice forbids reuse without consent | No mebel.kz photos downloaded; photos come from ABO (CC BY 4.0, section 5); the second source for price is the product name (section 7). |
+| User survey of the app (22 Nov): "the models and the size of the data are the weak part" | Better photo encoders and LightGBM tested on the same folds; two IKEA sources as checks in other markets | DINOv2 replaces ResNet-18 as the best photo encoder (5.6-5.7); LightGBM becomes the best specifications-only price model by a hair, the chosen price model does not change (7); the name's gain holds at IKEA (7.4) |
 
 **Problem formulation, revisited.** The honest score of a specification-only model is about **0.95 macro-F1 in grouped CV**, and the remaining errors are almost all at the chest / TV stand / desk border. Raising the average further is not a meaningful goal. The open question is whether information the numbers cannot carry (shape, drawers vs open shelves) fixes *that border*, measured with the per-class metrics above.
 """)
@@ -567,6 +574,7 @@ md("""
 * **The pretrained network wins clearly over the one we trained ourselves (0.766 vs 0.605).** ResNet-18 learned what furniture looks like from 1.2 million ImageNet photos; our small CNN sees about 2,700 products. With this little data, borrowing a trained network is the right choice, and the curve above shows why the small CNN stops at about 0.6.
 * Counting each product once (per group) changes little (0.61-0.80, each within 0.02 of its per-listing score), because most Amazon groups are small.
 * Specifications alone score 0.662 here vs 0.945 at mebel.kz. Amazon has no price, a third of the listings have no materials, and its categories mix more shapes. The same task is much harder in this store.
+* *These are the Final's first photo models. Section 5.6 adds stronger pretrained encoders and a fine-tuned network on the same folds: the best, DINOv2, reaches 0.844 alone and 0.851 with the specifications.*
 """)
 
 code("""
@@ -602,6 +610,111 @@ for ax, name, P in zip(axes, ABO_NAMES, ABO_PROBS):
     sns.heatmap(cm[FOCUS], annot=True, fmt="d", cmap="Blues", cbar=False, ax=ax, annot_kws={"fontsize": 8})
     ax.set_title(name, fontsize=8); ax.set_xlabel("predicted"); ax.set_ylabel("true")
 plt.tight_layout(); plt.show()
+""")
+
+md("""
+### 5.6 Stronger photo models (added after the survey)
+
+> **In plain words.** People who tried the app said the models were the weak part. The photo comparison above uses one pretrained network (ResNet-18, 2015, trained on 1.3 million labelled photos) and one tiny network we trained ourselves. Here three stronger options run on **the same 3,332 listings and the same five outer folds**:
+> * **CLIP** (OpenAI, 2021): learned to match 400 million internet photos with their captions, so it has seen a great deal of furniture with words like "TV stand" next to it. Frozen; 512 numbers per photo.
+> * **DINOv2** (Meta, 2023): learned from 142 million photos with no labels at all, by comparing views of the same photo. Frozen; 384 numbers per photo.
+> * **Fine-tuned ResNet-18:** the same ResNet-18, but its last two blocks and a new output layer are **trained on our photos** in each outer training fold (main photo + one more view, 160 px, 3 epochs, smaller learning rate for the pretrained blocks). This is the middle ground between "frozen" and "from scratch".
+>
+> Frozen features go into the same logistic regression as before, with C chosen by inner grouped CV. Code: `furniture/photos.py`, `tools/abo_encoders_experiment.py`.
+""")
+code("""
+OOF2_FILE = Path("data/cache/abo_oof_v2.npz")
+if not OOF2_FILE.exists():         # about 1.5 hours on a laptop CPU (encoders + fine-tuning); the saved run is used otherwise
+    import tools.abo_encoders_experiment as experiment2
+    experiment2.main()
+z2 = np.load(OOF2_FILE, allow_pickle=True)
+assert (z2["folds"] == abo_folds).all() and (z2["y"] == abo_y).all(), "not the same listings and folds as 5.4"
+ALL_NAMES = ABO_NAMES + list(z2["names"])
+ALL_PROBS = np.concatenate([ABO_PROBS, z2["probs"]])
+print("settings chosen in the five folds (C):", z2["chosen"].item())
+rows = []
+for name, P in zip(ALL_NAMES, ALL_PROBS):
+    pred = P.argmax(1)
+    per_fold = [f1_score(abo_y[abo_folds == k], pred[abo_folds == k], average="macro") for k in range(5)]
+    rows.append({"model": name, "CV macro-F1": f1_score(abo_y, pred, average="macro"), "fold sd": np.std(per_fold),
+                 "per product (group)": f1_score(abo_y, pred, average="macro", sample_weight=abo_w),
+                 "accuracy": accuracy_score(abo_y, pred)})
+abo_all = pd.DataFrame(rows).set_index("model").sort_values("CV macro-F1")
+abo_all.round(3)
+""")
+code("""
+# Paired view: the same five folds, macro-F1 of each photo model minus ResNet-18 + logistic regression (section 5.4)
+REF = "photo (ResNet-18 + logistic regression)"
+fold_f1 = {n: np.array([f1_score(abo_y[abo_folds == k], P.argmax(1)[abo_folds == k], average="macro") for k in range(5)])
+           for n, P in zip(ALL_NAMES, ALL_PROBS)}
+pd.DataFrame({n: {"mean change vs ResNet-18 frozen": (fold_f1[n] - fold_f1[REF]).mean(),
+                  "sd of the change": (fold_f1[n] - fold_f1[REF]).std(),
+                  "folds better": int(((fold_f1[n] - fold_f1[REF]) > 0).sum())}
+              for n in ALL_NAMES if n != REF}).T.round(3)
+""")
+code("""
+ALL_TABLES = {name: class_table(P, abo_y) for name, P in zip(ALL_NAMES, ALL_PROBS)}
+SHOW = [REF, "photo (small CNN)", "photo (fine-tuned ResNet-18)", "photo (CLIP + logistic regression)",
+        "photo (DINOv2 + logistic regression)", "specs + photo (logistic regression)",
+        "specs + photo (CLIP, logistic regression)", "specs + photo (DINOv2, logistic regression)"]
+plt.figure(figsize=(12, 4.2))
+sns.heatmap(pd.DataFrame({n: ALL_TABLES[n]["F1"] for n in SHOW}).T, annot=True, fmt=".2f", cmap="Blues", vmin=0.3, vmax=1,
+            cbar=False, annot_kws={"fontsize": 8})
+plt.title("ABO, cross-validated F1 by type: earlier and stronger photo models"); plt.xticks(rotation=30, ha="right")
+plt.tight_layout(); plt.show()
+pd.concat({n.replace("logistic regression", "LR"): ALL_TABLES[n].loc[FOCUS, ["recall", "PR-AUC"]] for n in SHOW}, axis=1).round(2)
+""")
+ABO_NOTE_V2 = len(cells)
+md("""
+**What the stronger encoders change** (same 3,332 listings, same five folds as 5.4)
+* **DINOv2 is the best photo model: 0.844 macro-F1, against 0.766 for frozen ResNet-18** (+0.079, better in all 5 folds, sd of the change 0.024). With the specifications added it reaches **0.851**, the best result on ABO (0.794 before). CLIP is in between (0.801, better than ResNet-18 in 4 of 5 folds).
+* **The ranking follows how much each encoder has seen:** ResNet-18 (1.3 M labelled photos) < CLIP (400 M captioned photos) < DINOv2 (142 M curated photos, trained to describe *what an object looks like*, not what a caption says). DINOv2 vectors are smaller (384 vs 512 numbers) and still better: they separate shapes, which is what furniture types differ in.
+* **Fine-tuning ResNet-18 helps a little: 0.789 vs 0.766** (better in 4 of 5 folds, but the change, +0.026 ± 0.028, is about one sd). It needed about 50 minutes of CPU for five folds and still loses to a frozen DINOv2 with a logistic regression that trains in seconds. With about 2,700 training products, a better pretrained encoder beats training more of a weaker one.
+* **The model we trained ourselves stays far behind** (small CNN 0.605): the gap between "learned from scratch" and "borrowed" is now 0.24 macro-F1.
+* **The case furniture, the Endterm hypothesis:** with DINOv2 (+ specs), TV-stand recall rises to **0.78** (0.08 with specs only, 0.64 with ResNet-18 + specs) and PR-AUC to 0.79; desk PR-AUC 0.95, wardrobe 0.84, coffee table 0.97. **Chests of drawers are still the weak class** (PR-AUC 0.57-0.63 for every model): the photos and the sizes of a chest and a low cabinet look alike, and with 39 products the numbers are uncertain.
+* The fold spread is ± 0.05 for every photo model, so differences below about 0.03 (for example CLIP alone vs CLIP + specs) are not reliable; the paired table counts how many of the same five folds each model wins.
+""")
+
+md("""
+### 5.7 An outside test: IKEA catalogue photos
+
+> **In plain words.** Every ABO score above comes from Amazon photos only. Here each photo model is trained on **all ABO listings** and then shown **IKEA catalogue photos it has never seen**, from another company and another photo style (Tautkute et al. 2017; rights and selection in section 3.2 and `DATA_CARD.md`). Only 221 IKEA photos can be labelled with our types, mostly beds, chairs and sofas, so this is a **check of transfer**, not a full benchmark. For the fine-tuned network, the five fold models are averaged (no network sees IKEA during training).
+""")
+code("""
+ik = pd.read_csv("data/processed/ikea_images.csv"); ik = ik[ik["ok"]].reset_index(drop=True)
+y_ik = z2["ikea_y"]; present = sorted(set(y_ik))
+print("IKEA photos:", len(ik), "|", ik["furniture_type"].value_counts().to_dict())
+ik_rows = {}
+for name, P in zip(z2["ikea_names"], z2["ikea_probs"]):
+    pred = P.argmax(1)
+    ik_rows[name] = {"accuracy": accuracy_score(y_ik, pred),
+                     "macro-F1 (types present)": f1_score(y_ik, pred, labels=present, average="macro"),
+                     **{f"recall {TYPES[k]}": (pred[y_ik == k] == k).mean() for k in present}}
+ikea_table = pd.DataFrame(ik_rows).T
+ikea_table.insert(0, "ABO CV macro-F1", [abo_all.at[n, "CV macro-F1"] for n in ikea_table.index])
+ikea_table.round(3)
+""")
+code("""
+# Six IKEA photos with the prediction of the best and of the oldest frozen encoder
+from furniture.photos import load_images
+best_ik = ikea_table["macro-F1 (types present)"].idxmax()
+P_best = z2["ikea_probs"][list(z2["ikea_names"]).index(best_ik)]
+P_ref = z2["ikea_probs"][list(z2["ikea_names"]).index(REF)]
+pick = ik.groupby("furniture_type").head(1).index[:6]
+fig, axes = plt.subplots(1, len(pick), figsize=(2.6 * len(pick), 3.2))
+for ax, i in zip(axes, pick):
+    ax.imshow(Image.open(Path("data/external/ikea_images") / ik.at[i, "path"])); ax.axis("off")
+    ax.set_title(f"true: {ik.at[i, 'furniture_type']}\\nResNet-18: {TYPES[P_ref[i].argmax()]}\\n{best_ik.split('(')[1].split(' ')[0]}: {TYPES[P_best[i].argmax()]}", fontsize=8)
+plt.suptitle("IKEA catalogue photos (property of IKEA.com, non-commercial research use)", fontsize=9)
+plt.tight_layout(); plt.show()
+""")
+IKEA_IMG_NOTE = len(cells)
+md("""
+**What the outside test shows** (221 IKEA photos: chair 106, bed 54, sofa 40, desk 8, wardrobe 7, chest of drawers 4, TV stand 2)
+* **DINOv2 transfers best: macro-F1 0.880** over the seven types present (accuracy 0.846), against 0.755 for ResNet-18 and 0.767 for the fine-tuned network. It is the only model that finds both IKEA TV stands, all four chests and all seven wardrobes.
+* **CLIP transfers worst on the rare classes (0.648):** it misses the TV stands and 4 of 7 wardrobes, although its accuracy (0.846) equals DINOv2's on the common classes. A caption-trained encoder seems to tie these products to Amazon's photo style more than to their shape.
+* **The fine-tuned ResNet-18 loses beds** (recall 0.46 vs 0.72 frozen): training its last blocks on Amazon's photos made it more Amazon-specific. That is the risk of fine-tuning on a small, one-source set.
+* **Limits:** the rare classes have 2-8 photos each, so one photo moves their recall a lot; the common ones (chair, bed, sofa) carry the accuracy. This is a check that the ABO ranking is not an Amazon accident (it holds: DINOv2 first), not a precise score.
 """)
 
 md("""
@@ -690,6 +803,7 @@ from sklearn.linear_model import Ridge
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
 from sklearn.model_selection import cross_val_predict
+from lightgbm import LGBMRegressor
 from furniture.price import SIZE_NUM, CATEGORICAL, E5_MODEL, text_column, spec_prep, tfidf, e5_embed, price_metrics
 
 pdf = df.copy()
@@ -728,6 +842,10 @@ PRICE_MODELS = {
     "boosting | specs": ("specs", price_pipe(HistGradientBoostingRegressor(random_state=RANDOM_STATE)),
                          {"model__learning_rate": [0.05, 0.1], "model__max_leaf_nodes": [15, 31], "model__min_samples_leaf": [10, 30]}),
     "SVR | specs": ("specs", price_pipe(SVR()), SVR_GRID),
+    # added after the survey: LightGBM, a stronger gradient-boosting library (leaf-wise trees, column sampling)
+    "LightGBM | specs": ("specs", price_pipe(LGBMRegressor(n_estimators=600, random_state=RANDOM_STATE, n_jobs=-1, verbose=-1)),
+                         {"model__learning_rate": [0.03, 0.06], "model__num_leaves": [15, 31], "model__min_child_samples": [10, 30],
+                          "model__colsample_bytree": [0.3, 0.7]}),
     "ridge | name only (TF-IDF)": ("name only", price_pipe(Ridge(), text="text", specs=False), RIDGE),
     "ridge | specs + name (TF-IDF)": ("specs + name, own", price_pipe(Ridge(), text="text"), RIDGE),
     "SVR | specs + name (TF-IDF)": ("specs + name, own", price_pipe(SVR(), text="text"), SVR_GRID),
@@ -790,12 +908,13 @@ PRICE_NOTE_1 = len(cells)
 md("""
 **What the table shows** (CV = grouped 5-fold CV on 2,971 training listings; test = the 793 saved listings, used once)
 * **Baselines.** The median price of the type cuts the error of the overall median from 136,100 to 94,800 KZT (CV MAE). The type matters, but most of the price spread is *inside* a type.
-* **Specifications** bring the CV MAE to 61,000-65,000 KZT (MAPE about 25%, R² on log price 0.76-0.77). The four model families are within 3,300 KZT of each other, less than their fold spread (± 4,000-6,000): forest 61,436, boosting 61,641, SVR 61,719, ridge 64,686. **The forest is the best specifications-only model**, by a hair.
+* **Specifications** bring the CV MAE to 60,000-65,000 KZT (MAPE about 25%, R² on log price 0.76-0.77). The five model families are within 4,100 KZT of each other, less than their fold spread (± 4,000-6,000): LightGBM 60,591, forest 61,436, boosting 61,641, SVR 61,719, ridge 64,686. **LightGBM (added after the survey) is the best specifications-only model**, but only 845 KZT ahead of the forest, the Final's earlier best; on the same folds it beats the forest in 3 of 5.
 * **The name alone** (ridge on TF-IDF) is much worse (84,900): the name does not replace the sizes.
-* **Specifications + name with our own TF-IDF features and an SVR is the best model in CV: MAE 59,071 KZT, MAPE 23.0%, R² 0.799. It is the chosen model.** On the test set: MAE **51,746 vs 54,292** KZT for the forest on specifications (-4.7%), MAPE 20.6% vs 22.1%, R² 0.850 vs 0.826.
+* **Specifications + name with our own TF-IDF features and an SVR is the best model in CV: MAE 59,071 KZT, MAPE 23.0%, R² 0.799. It is the chosen model.** On the test set: MAE **51,746 vs 53,666** KZT for LightGBM on specifications (-3.6%), MAPE 20.6% vs 22.1%, R² 0.850 vs 0.840.
+* **LightGBM does not help with the name.** LightGBM on specifications + TF-IDF name (not in this table: about 2 hours on CPU, `tools/price_experiment.py --lightgbm-name`) gave CV MAE 62,167 and test 56,391, worse than with specifications alone. Trees split on one column at a time and thousands of rare word pieces give them little to split on; the SVR uses all pieces at once through its kernel.
 * **The pretrained encoder does not beat our own text features.** e5 + SVR: CV 60,246, test 54,249, about the same as the specifications alone; e5 + ridge is no better than specifications. The names are short and full of shop-specific tokens (fabric names, "120x52", "2-98x203"). Character pieces pick these up directly; a sentence encoder trained on general text turns the whole name into one "meaning" vector and loses them. A larger encoder (LaBSE, e5-base) might do better, but costs several times the CPU time.
-* **How sure is the gain from the name?** On the same five folds, the chosen model beats the forest in 4 of 5 folds, by 2,335 KZT on average, but the per-fold change varies by ± 5,700 KZT. Per-fold evidence alone is therefore weak; section 7.2 repeats the comparison with other fold cuts.
-* Counting each test design once (last column), all errors are higher (70,000-78,000 KZT), because expensive sofa designs with few colours weigh more. The chosen model is still ahead (72,245 vs 76,550).
+* **How sure is the gain from the name?** On the same five folds, the chosen model beats LightGBM in 3 of 5 folds, by 1,500 KZT on average, but the per-fold change varies by ± 3,800 KZT. Per-fold evidence alone is therefore weak; section 7.2 repeats the comparison with other fold cuts.
+* Counting each test design once (last column), all errors are higher (69,500-78,300 KZT), because expensive sofa designs with few colours weigh more. The chosen model is still ahead (72,245 vs 73,030 for LightGBM).
 * Caveat: each model's settings were tuned on the same five folds, so its CV number is slightly optimistic. The test set and the repeated folds in 7.2 are the checks.
 """)
 
@@ -816,8 +935,9 @@ pd.DataFrame([{"model": a, "CV MAE, full name": price_table.at[a, "CV MAE (KZT)"
 PRICE_NOTE_2 = len(cells)
 md("""
 **The text is not memorising design prices.**
-* Masking the design name keeps most of the gain: SVR + TF-IDF 2,366 → 1,767 KZT (three quarters), ridge 587 → 534. For the pretrained encoder masking even helps (1,190 → 1,469): an unknown design name only adds noise to its vector.
-* So what the name adds is mostly general words: fabric, sliding vs hinged doors, wall-hung, children's, office (7.3). The groups already keep every listing of a design on one side of each split, so a design's price cannot be copied from a twin. The quarter of the gain that disappears with masking is a **line premium** that only the design name shows: the same name can be a sofa in one group and an armchair in another (for example *Брера*: the sofa costs 0.9-1.1 million KZT and the armchair 0.63-0.79 million, far above what their sizes suggest).
+* Masking the design name keeps most of the gain. Measured against the **same model on specifications only**: SVR 61,719 → 59,071 with the full name (-2,648 KZT) and → 59,669 with the name masked (-2,050, three quarters of the gain kept); ridge 64,686 → 60,849 → 60,902 (almost all kept). For the pretrained encoder masking even helps (60,246 → 59,967): an unknown design name only adds noise to its vector.
+* Against the best specifications-only model (LightGBM, 60,591; columns "gain over specs" above), the margins are thinner: SVR + TF-IDF gains 1,520 KZT with the full name and 922 masked; ridge with the name is about level with LightGBM (-258 / -312).
+* So what the name adds is mostly general words: fabric, sliding vs hinged doors, wall-hung, children's, office (7.3). The groups already keep every listing of a design on one side of each split, so a design's price cannot be copied from a twin. The part of the gain that disappears with masking is a **line premium** that only the design name shows: the same name can be a sofa in one group and an armchair in another (for example *Брера*: the sofa costs 0.9-1.1 million KZT and the armchair 0.63-0.79 million, far above what their sizes suggest).
 * **The Endterm worry ("do not use the name, twins give away the price") holds for random splits, not for our grouped ones.** We keep the full name in the chosen model and report the masked result next to it.
 """)
 
@@ -850,7 +970,8 @@ variation.round(3)
 PRICE_NOTE_3 = len(cells)
 md("""
 **How much the numbers move between runs**
-* Over six fold cuts (seeds 0-4 and 42), the forest on specifications has CV MAE **61,489 ± 550 KZT** and the chosen model **58,340 ± 412**. **The chosen model wins in all six cuts, by 2,366 to 4,057 KZT.** The gain is small (4-6% of the error) but it is not an accident of one cut.
+* Over six fold cuts (seeds 0-4 and 42), LightGBM on specifications has CV MAE **61,153 ± 938 KZT** and the chosen model **58,340 ± 412**. **The chosen model wins in all six cuts, by 1,520 to 4,302 KZT.** The gain is small (2-7% of the error) but it is not an accident of one cut. (Against the forest, the best specifications-only model before LightGBM was added, the chosen model also won in all six cuts, by 2,366-4,057 KZT.)
+* LightGBM moves about twice as much between cuts as the chosen model (± 938 vs ± 412): its lead over the forest on seed 42 (845 KZT) is within its own run-to-run noise.
 * The chosen type model (SVM) varies by **± 0.003 macro-F1** across cuts (0.941-0.951). Differences between type models below about 0.01 (sections 1.4-1.6) are within this run-to-run noise.
 * With the same seed, re-running this notebook gives the same numbers: every random step (folds, forests, boosting, k-means at the Endterm) uses `random_state=42`. The one exception is the small CNN in section 5, whose CPU training can differ slightly between machines; its run is saved in `data/cache/abo_oof.npz` and re-used.
 """)
@@ -918,12 +1039,70 @@ pd.DataFrame(rows).set_index("word in name").round(3)
 PRICE_NOTE_4 = len(cells)
 md("""
 **What the errors show**
-* **The biggest errors are modular sofas** (*Нолан*, *Риббл*): sold in numbered configurations priced at 1-2.3 million KZT, and predicted at 0.3-0.9 million by both models (-50 to -73%). The listed sizes barely separate the configurations (*Нолан 1* and *Нолан 2* are both 162 × 81 cm, at 964,510 and 1,037,160 KZT), and the configuration number in the name means nothing to the model. Neither source carries what sets the price here.
-* **Per type, the name helps most for wardrobes** (test MAE 49,400 → 30,900 KZT: "шкаф-купе", sliding doors, costs more than a hinged wardrobe of the same size), **TV stands** (32,000 → 24,900: wall-hung "подвесная" ones are cheaper), **coffee tables** and **beds**.
-* **It hurts chests of drawers** (18,000 → 39,100 KZT). Almost all of this is one design: the wide *Монблан* chest (185 × 50 × 76 cm) appears **16 times** in the test set (four front patterns × four colours, all 283,200 KZT), and the name model prices every copy about 40% too high. Counted per design, it is one error. Section 1.5 already showed this effect for the type.
+* **The biggest errors are modular sofas** (*Нолан*, *Риббл*): sold in numbered configurations priced at 1-2.3 million KZT, and predicted at 0.36-1.0 million by both models (-48 to -73%). The listed sizes barely separate the configurations (*Нолан 1* and *Нолан 2* are both 162 × 81 cm, at 964,510 and 1,037,160 KZT), and the configuration number in the name means nothing to the model. Neither source carries what sets the price here.
+* **Per type, the name helps most for wardrobes** (test MAE 48,400 → 30,900 KZT against LightGBM on specifications: "шкаф-купе", sliding doors, costs more than a hinged wardrobe of the same size). For coffee tables, beds and chairs the change is small (1-4%).
+* **It hurts armchairs** (40,400 → 47,400 KZT), **TV stands** (20,800 → 24,900) and **chests of drawers** (36,800 → 39,100). For chests, almost all of the error is one design: the wide *Монблан* chest (185 × 50 × 76 cm) appears **16 times** in the test set (four front patterns × four colours, all 283,200 KZT), and the name model prices every copy about 40% too high. Counted per design, it is one error. Section 1.5 already showed this effect for the type. (Against the forest, the name had *helped* TV stands, 32,000 → 24,900: LightGBM already prices them well from the sizes.)
 * **Words the model learned** (ridge on the masked name, weights on log price): raise the price: *мех* (faux fur), *велюр*, *орех* (walnut), *шкаф-купе*, *офисная*, *детская кровать*, *мини*; lower the price: *подвесная* (wall-hung), *белый*, *дуб* (an oak-effect board colour), *стул*. These are exactly the things the specification table does not record.
-* **Fabric:** for boucle (*букле*) the specifications under-price by 16% on average and the name removes that bias (-0.158 → -0.018 in log price); also for *рогожка* (-0.060 → -0.006). For chenille (*шенилл*, mostly the modular sofas) and modular sofas the bias stays large (-0.45 and -0.68).
+* **Fabric:** for boucle (*букле*) the specifications under-price by 11% on average and the name removes that bias (-0.118 → -0.018 in log price). For chenille (*шенилл*, mostly the modular sofas) and modular sofas the bias stays large (-0.45 and -0.68).
 * **What would help next:** the configuration of modular sets, the number of seats, the mechanism (recliner, lift, sofa-bed), the brand line, and photos. The photos are not allowed (section 3); the rest could be parsed from the specification table, which we did not do for the Final.
+""")
+
+md("""
+### 7.4 Does the name help in another market? IKEA Saudi Arabia (added after the survey)
+
+> **In plain words.** Everything above is one store in one city. If "the product name adds what the specifications miss" is a real pattern and not a mebel.kz accident, it should also hold elsewhere. **IKEA Saudi Arabia** (620 items of our types with all three sizes, prices in Saudi riyals, scraped from ikea.com/sa in April 2020; rights in section 3.2) is a very different store: one brand, flat-pack furniture, English labels such as *"HEMNES Chest of 8 drawers, 160x96 cm"*.
+> * **Specifications:** the sizes (height, longer and shorter side, footprint, volume, two ratios, on a log scale) and the type. IKEA lists **no materials or colour**, so its specifications are poorer than mebel.kz's.
+> * **Text:** product line name + short description, read with **the same TF-IDF features** as the mebel.kz names (`furniture/price.py: tfidf`).
+> * **Protocol:** grouped 5-fold CV, one group per product line (all HEMNES items together), stratified by type, seed 42, settings tuned on the same folds. 620 items are too few for a separate test set, so CV only, as for ABO.
+""")
+code("""
+from furniture.ikea import load_ikea_sa, ikea_pipe
+isa = load_ikea_sa()
+iy = np.log(isa["price_sar"].values)
+ISPLITS = list(StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE).split(isa, isa["furniture_type"], isa["group"]))
+print(f"IKEA SA: {len(isa)} items in {isa['group'].nunique()} product lines | median price {isa['price_sar'].median():,.0f} SAR "
+      f"(range {isa['price_sar'].min():,.0f} - {isa['price_sar'].max():,.0f})")
+LGB_SMALL = {"model__learning_rate": [0.03, 0.06], "model__num_leaves": [7, 15], "model__min_child_samples": [5, 15]}
+IKEA_MODELS = {
+    "ridge | specs": ("specs", ikea_pipe(Ridge()), {"model__alpha": [0.3, 1, 3, 10]}),
+    "random forest | specs": ("specs", ikea_pipe(RandomForestRegressor(n_estimators=300, random_state=RANDOM_STATE, n_jobs=-1)),
+                              {"model__min_samples_leaf": [1, 3, 10]}),
+    "LightGBM | specs": ("specs", ikea_pipe(LGBMRegressor(n_estimators=400, random_state=RANDOM_STATE, verbose=-1, n_jobs=-1)), LGB_SMALL),
+    "SVR | specs": ("specs", ikea_pipe(SVR()), SVR_GRID),
+    "ridge | specs + name (TF-IDF)": ("specs + name", ikea_pipe(Ridge(), text=True), {"model__alpha": [0.3, 1, 3, 10]}),
+    "SVR | specs + name (TF-IDF)": ("specs + name", ikea_pipe(SVR(), text=True), SVR_GRID),
+}
+isa_med = np.zeros(len(isa))
+for tr, va in ISPLITS:
+    isa_med[va] = isa.iloc[va]["furniture_type"].map(pd.Series(iy[tr]).groupby(isa.iloc[tr]["furniture_type"].values).median()).values
+irow, IOOF = [], {"median price of the type": isa_med}
+for name, (inputs, p, grid) in IKEA_MODELS.items():
+    s = GridSearchCV(p, grid, cv=ISPLITS, scoring="neg_mean_absolute_error", n_jobs=1 if "forest" in name else -1).fit(isa, iy)
+    IOOF[name] = cross_val_predict(clone(s.best_estimator_), isa, iy, cv=ISPLITS)
+ifold = lambda o: np.array([np.mean(np.abs(np.exp(o[va]) - np.exp(iy[va]))) for _, va in ISPLITS])
+ikea_price = pd.DataFrame({n: {"inputs": IKEA_MODELS[n][0] if n in IKEA_MODELS else "type",
+                               "CV MAE (SAR)": price_metrics(iy, o)["MAE (KZT)"],   # price_metrics names the unit KZT; here it is SAR
+                               "CV fold sd": ifold(o).std(), "CV MAPE": price_metrics(iy, o)["MAPE"],
+                               "CV R² (log)": price_metrics(iy, o)["R² (log)"]} for n, o in IOOF.items()}).T
+ikea_price.style.format({"CV MAE (SAR)": "{:,.0f}", "CV fold sd": "{:,.0f}", "CV MAPE": "{:.3f}", "CV R² (log)": "{:.3f}"})
+""")
+code("""
+# Paired: the same five folds, fold MAE of each specs + name model minus the best specifications-only model
+I_SPECS_BEST = min([n for n in IKEA_MODELS if IKEA_MODELS[n][0] == "specs"], key=lambda n: ikea_price.at[n, "CV MAE (SAR)"])
+print("best specifications-only model on IKEA SA:", I_SPECS_BEST)
+pd.DataFrame({n: {"mean change in fold MAE (SAR)": (ifold(IOOF[n]) - ifold(IOOF[I_SPECS_BEST])).mean(),
+                  "sd of the change": (ifold(IOOF[n]) - ifold(IOOF[I_SPECS_BEST])).std(),
+                  "folds better": int(((ifold(IOOF[n]) - ifold(IOOF[I_SPECS_BEST])) < 0).sum()),
+                  "change in MAPE": price_metrics(iy, IOOF[n])["MAPE"] - price_metrics(iy, IOOF[I_SPECS_BEST])["MAPE"]}
+              for n in IKEA_MODELS if IKEA_MODELS[n][0] == "specs + name"}).T.round(3)
+""")
+IKEA_PRICE_NOTE = len(cells)
+md("""
+**What the second market shows** (620 IKEA items, 147 product lines, grouped 5-fold CV)
+* **The text helps here too.** SVR on sizes + type + product text: CV MAE **637 SAR, MAPE 39.9%**, against **683 SAR, MAPE 46.6%** for the best specifications-only model (ridge). The median price of the type: 1,004 SAR, MAPE 82.7%. The SVR wins in 4 of 5 folds (-73 ± 105 SAR per fold), ridge with text in 3 of 5.
+* **The same model family wins in both stores:** SVR on specifications + TF-IDF text is the best model at mebel.kz (section 7) and at IKEA, with the same text features and no change to them. On IKEA, the trees (forest 714, LightGBM 720) are slightly *worse* than the linear model: with 620 items and no materials, there is not enough data for them.
+* **Errors are much larger than at mebel.kz (MAPE 40% vs 23%)** because IKEA's specifications are poorer: no materials, no colour, and a wardrobe "combination" or a corner sofa can have the same outer size at very different prices. This is the same lesson as 7.3: the price lives in what the size table does not say.
+* **Limits:** prices are from one day in April 2020, in another currency and market, so IKEA numbers are compared only *inside* IKEA, never with mebel.kz in KZT. 620 items give a noisy CV (fold sd 180-245 SAR), so the result supports the mebel.kz finding but does not measure it precisely.
 """)
 PRICE_END = len(cells)
 
@@ -973,6 +1152,53 @@ assert (joblib.load("models/abo_photo.joblib")["pipeline"].predict(abo_fit) == p
 print("saved: structured", BEST, "| photo C =", photo_pipe.get_params()["model__C"], "| specs + photo C =", both_pipe.get_params()["model__C"])
 """)
 code("""
+# 1b) type WITHOUT the price (added after a user test of the app: "the type should not need a price").
+#     Same SVM recipe and grouped folds as section 1.6, inputs: sizes, the derived sizes, materials and colour.
+from sklearn.preprocessing import OneHotEncoder
+NOPRICE_NUM = [c for c in NUMERIC if "price" not in c]
+noprice_pipe = lambda m: SkPipeline([("prep", ColumnTransformer([
+    ("numeric", StandardScaler(), NOPRICE_NUM), ("materials", "passthrough", MATERIALS),
+    ("colour", OneHotEncoder(handle_unknown="ignore", min_frequency=10), COLOUR)])), ("model", m)])
+s_np = GridSearchCV(noprice_pipe(SVC(class_weight="balanced")), {"model__C": [1, 3, 10, 30], "model__gamma": ["scale", 0.03, 0.1, 0.3]},
+                    cv=cv, scoring="f1_macro", n_jobs=-1).fit(X_train, y_train, groups=g_train)
+np_folds = cross_validate(clone(s_np.best_estimator_), X_train, y_train, groups=g_train, cv=cv, scoring="f1_macro")["test_score"]
+noprice = noprice_pipe(clone(s_np.best_estimator_.named_steps["model"]).set_params(probability=True, random_state=RANDOM_STATE)).fit(X_train, y_train)
+np_pred = noprice.predict(X_test)
+print(f"type without price, SVM {s_np.best_params_}: CV macro-F1 {np_folds.mean():.3f} ± {np_folds.std():.3f} | "
+      f"test {f1_score(y_test, np_pred, average='macro'):.3f} | with price (chosen SVM): CV {TUNED[BEST]['folds'].mean():.3f}")
+joblib.dump({"pipeline": noprice, "features": NOPRICE_NUM + MATERIALS + COLOUR, "materials": MATERIALS,
+             "name": "SVM without price (mebel.kz)", "cv_macro_f1": float(np_folds.mean()), "sklearn": sklearn.__version__},
+            "models/structured_noprice.joblib")
+assert (joblib.load("models/structured_noprice.joblib")["pipeline"].predict(X_test) == np_pred).all()
+pd.Series(f1_score(y_test, np_pred, average=None, labels=TYPES), index=TYPES, name="test F1 without price").round(3).to_frame().T
+""")
+NOPRICE_NOTE = len(cells)
+md("""
+**Type without the price.** A tester of the app pointed out that the type form required a price, although a type should be readable from the item itself. Re-tuned on the same grouped folds without the two price inputs, the SVM (C = 10, gamma = 0.1) scores **CV macro-F1 0.950 ± 0.021 and test 0.971**, the same as the chosen SVM with the price (0.949; test 0.974). **The price adds nothing to the type** once sizes and materials are known, which fits section 4.1: the type is a question of size and materials. The app now uses this model when no price is entered (`models/structured_noprice.joblib`). We keep the chosen model of section 1.6 for the comparison above, because that choice was made before this check.
+""")
+code("""
+# 2b) and 3b) the stronger photo encoder of section 5.6 (DINOv2, frozen), same recipe: fitted on every ABO listing
+#     with a photo, C = the value chosen most often in the five outer folds
+from furniture.photos import cached_features
+chosen2 = ast.literal_eval(z2["chosen"].item())
+dfeats = cached_features("dinov2", views["image_id"], views["path"])
+DEMB = [f"dinov2_{i}" for i in range(dfeats.shape[1])]
+demb = pd.DataFrame(dfeats, columns=DEMB).groupby(views["row"].values).mean()
+abo_fit2 = pd.concat([abo.loc[demb.index].reset_index(drop=True), demb.reset_index(drop=True)], axis=1)
+dphoto = SkPipeline([("scale", ColumnTransformer([("e", StandardScaler(), DEMB)])),
+                     ("model", LogisticRegression(class_weight="balanced", max_iter=3000))])
+dboth = SkPipeline([("prep", ColumnTransformer([("spec", abo_spec_prep(SPEC_NUM), SPEC_NUM + ABO_MATERIALS + ["main_color"]),
+                                                ("e", StandardScaler(), DEMB)])),
+                    ("model", LogisticRegression(class_weight="balanced", max_iter=3000))])
+for path, p, name in [("models/abo_photo_dinov2.joblib", dphoto, "photo (DINOv2 + logistic regression)"),
+                      ("models/abo_specs_photo_dinov2.joblib", dboth, "specs + photo (DINOv2, logistic regression)")]:
+    p.set_params(model__C=Counter(chosen2[name]).most_common(1)[0][0]).fit(abo_fit2, abo_fit2["furniture_type"])
+    joblib.dump({"pipeline": p, "embedding_columns": DEMB, "encoder": "dinov2", "name": name, "settings": p.get_params()["model__C"],
+                 "cv_macro_f1": float(abo_all.loc[name, "CV macro-F1"]), "sklearn": sklearn.__version__}, path)
+    assert (joblib.load(path)["pipeline"].predict(abo_fit2) == p.predict(abo_fit2)).all()
+    print("saved", path, "| C =", p.get_params()["model__C"], "| CV macro-F1", round(abo_all.loc[name, "CV macro-F1"], 3))
+""")
+code("""
 # 4) price, mebel.kz: the best specifications-only model and the best specifications + name model (section 7),
 #    fitted on the 2,971 training listings. The range shown in the app is the 10th-90th percentile of the
 #    cross-validated errors in log price.
@@ -1001,24 +1227,27 @@ md("""
 ## 9. Conclusions
 
 **Main question: the price.** On the same 3,961 mebel.kz listings, the same 793 test listings and the same design groups:
-1. **Specifications predict the price to within about 25% on average** (best: random forest, grouped CV MAE 61,400 KZT, MAPE 25%, R² on log price 0.77; test MAE 54,300 KZT, MAPE 22%). The median price of the type is far worse (CV MAE 94,800). Linear, forest, boosting and kernel models are within the fold spread of each other (section 7).
-2. **The product name adds a small but steady improvement.** SVR on specifications + TF-IDF of the name: CV MAE 59,100, test 51,700 KZT (-4.7%), MAPE 20.6%. It wins in all six fold cuts we tried, by 2,400-4,100 KZT (section 7.2).
-3. **Our own text features beat the pretrained encoder.** multilingual-e5-small adds about half as much as TF-IDF in CV and nothing on the test set: the names are short and full of shop-specific words and sizes.
-4. **The text is not memorising design prices.** With the design name masked, three quarters of the gain remains; it comes from words like fabric (*букле*, *велюр*, *мех*), sliding doors (*шкаф-купе*), wall-hung (*подвесная*) (section 7.1, 7.3).
-5. **What neither source carries:** the configuration of modular sofas and brand-line premiums; the largest errors (-50 to -73%) are modular sets of 1-2.3 million KZT.
+1. **Specifications predict the price to within about 25% on average** (best: LightGBM, grouped CV MAE 60,600 KZT, MAPE 25%, R² on log price 0.77; test MAE 53,700 KZT, MAPE 22%). The median price of the type is far worse (CV MAE 94,800). Linear, forest, boosting, LightGBM and kernel models are within the fold spread of each other (section 7): a stronger tree library did not move the error much.
+2. **The product name adds a small but steady improvement.** SVR on specifications + TF-IDF of the name: CV MAE 59,100, test 51,700 KZT (-3.6% against LightGBM), MAPE 20.6%. It wins in all six fold cuts we tried, by 1,500-4,300 KZT (section 7.2).
+3. **The same holds in a second market.** On 620 IKEA Saudi Arabia items, the same SVR + TF-IDF text beats the best specifications-only model (MAPE 46.6% → 39.9%, 4 of 5 folds) (section 7.4).
+4. **Our own text features beat the pretrained encoder.** multilingual-e5-small adds less than TF-IDF in CV and nothing on the test set: the names are short and full of shop-specific words and sizes.
+5. **The text is not memorising design prices.** With the design name masked, three quarters of the SVR's gain over specifications remains; it comes from words like fabric (*букле*, *велюр*, *мех*), sliding doors (*шкаф-купе*), wall-hung (*подвесная*) (section 7.1, 7.3).
+6. **What neither source carries:** the configuration of modular sofas and brand-line premiums; the largest errors (-48 to -73%) are modular sets of 1-2.3 million KZT.
 
 **Findings on the type (sections 1-6)**
-6. **The type is a size question.** Three sizes alone give test macro-F1 0.918; all inputs give about 0.95 in grouped CV (SVM 0.949 ± 0.019, ± 0.003 between fold cuts). Part of the Endterm's 0.97 and its model ranking came from colour twins across the split (section 1).
-7. **The weak classes are the mid-size case furniture** (TV stand, desk, chest: CV F1 0.875-0.914), not the small coffee-table class (PR-AUC 0.991) (section 2).
-8. **The type model is a one-store model:** 0.606 on Amazon listings with sizes only (section 6).
-9. **Photos help where the sizes fail**, tested on Amazon (other products, CC BY 4.0): a frozen ResNet-18 beats the specifications (0.766 vs 0.662) and finds TV stands (recall 0.08 → 0.64 with both inputs); a small CNN trained from scratch does not (0.605) (section 5).
+7. **The type is a size question.** Three sizes alone give test macro-F1 0.918; all inputs give about 0.95 in grouped CV (SVM 0.949 ± 0.019, ± 0.003 between fold cuts). Part of the Endterm's 0.97 and its model ranking came from colour twins across the split (section 1).
+8. **The weak classes are the mid-size case furniture** (TV stand, desk, chest: CV F1 0.875-0.914), not the small coffee-table class (PR-AUC 0.991) (section 2).
+9. **The type model is a one-store model:** 0.606 on Amazon listings with sizes only (section 6).
+10. **Photos help where the sizes fail**, tested on Amazon (other products, CC BY 4.0): a frozen ResNet-18 beats the specifications (0.766 vs 0.662); a small CNN trained from scratch does not (0.605) (section 5).
+11. **A better pretrained encoder matters more than training more of a weak one.** Frozen DINOv2 reaches 0.844 (0.851 with specs, TV-stand recall 0.08 → 0.78), CLIP 0.801, while fine-tuning ResNet-18 gives 0.789 for 50 minutes of CPU. On 221 IKEA photos never seen in training, DINOv2 also transfers best (macro-F1 0.880 vs 0.755 for ResNet-18) (sections 5.6-5.7).
 
 **Limitations**
 * One store, one city, prices from one day in October 2026 (with any discount of that day). The price models will not transfer as they are to other stores or later prices.
 * The second source on the same listings is text, not photos: the store's copyright notice forbids reusing its photos (section 3). The photo results therefore come from other products (ABO) and test the type, not the price (ABO has no price).
 * Tuning and CV used the same folds, so CV numbers are slightly optimistic; the test set (92 designs) is small, and one design in many colours can dominate a class (the *Монблан* chest, 16 test listings).
-* The pretrained encoder was used frozen and in its small size; fine-tuning or a larger model might narrow the gap to TF-IDF.
-* Amazon's rare classes are very small (21 TV-stand, 39 chest, 49 wardrobe products); their per-class numbers can move by 0.1 with a few products. The small CNN underfits (CPU, 15 epochs, 64 px).
+* The pretrained text encoder was used frozen and in its small size; fine-tuning or a larger model might narrow the gap to TF-IDF.
+* Amazon's rare classes are very small (21 TV-stand, 39 chest, 49 wardrobe products); their per-class numbers can move by 0.1 with a few products. The small CNN underfits (CPU, 15 epochs, 64 px); the fine-tuned ResNet-18 trained only 3 epochs at 160 px on two photos per listing (CPU time).
+* The IKEA sources are weaker evidence than ABO: IKEA SA has no stated licence (used as facts, like mebel.kz) and is one day in 2020 in another currency; the IKEA photos are the dataset authors' non-commercial permission, not IKEA's, and only 221 can be labelled. Both are used only to check whether the mebel.kz and ABO findings hold elsewhere.
 * Labels in both stores are the stores' own categories; some listings sit at the border (an office pedestal filed as a desk, low cabinets among chests).
 """)
 

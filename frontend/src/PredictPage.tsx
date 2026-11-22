@@ -10,7 +10,7 @@ type FormState = Record<NumericKey, string> & { materials: string[]; main_color:
 type Probability = { type: string; probability: number }
 type Prediction = { prediction: string; confidence: number; probabilities: Probability[]; source: string; model: string; cv_macro_f1: number }
 type PriceEstimate = { price_kzt: number; low_kzt: number; high_kzt: number; model: string; cv_mae_kzt: number; cv_mape: number }
-type PriceResult = { specs_only: PriceEstimate; with_name: PriceEstimate | null }
+type PriceResult = { specs_only: PriceEstimate; with_name: PriceEstimate | null; name_note?: string }
 const TYPES = ['sofa', 'armchair', 'chair', 'bed', 'wardrobe', 'chest_of_drawers', 'desk', 'coffee_table', 'tv_stand']
 const MAX_NAME = 200
 
@@ -21,6 +21,8 @@ const MATERIALS = [
   'glass', 'mirror', 'fabric', 'leather',
   'foam', 'spring', 'rattan', 'stone',
 ]
+/** The price model was trained on mebel.kz listings, none of which lists foam, so foam is not offered there. */
+const PRICE_MATERIALS = MATERIALS.filter((m) => m !== 'foam')
 // Flat, matte, saturated paint chips.
 const COLOURS: Record<string, string> = {
   white: '#f2efe9', black: '#141414', grey: '#7a7e84', beige: '#e3c597', brown: '#7c4119', green: '#2e8b4a',
@@ -158,12 +160,12 @@ function ResultView({ result }: { result: Prediction }) {
           </li>
         ))}
       </ol>
+      <p className="plain">On listings it had never seen, this model scored <b>{Math.round(result.cv_macro_f1 * 100)} out of 100</b> (averaged over the nine types, so rare types count as much as sofas).</p>
       <dl className="facts">
         <div><dt>Model</dt><dd>{result.model}</dd></div>
-        <div><dt>Grouped CV macro-F1</dt><dd>{result.cv_macro_f1.toFixed(3)}</dd></div>
         <div><dt>Input</dt><dd>{result.source}</dd></div>
       </dl>
-      <p className="fine">The percentage is the model's own estimate over nine furniture types, not a guarantee. The macro-F1 shows how often this model was right on listings it never saw.</p>
+      <p className="fine">The percentages are the model's own estimate for each type, not a guarantee. Technical score: grouped cross-validation macro-F1 {result.cv_macro_f1.toFixed(3)}. Details on the <a href="/how">How it works</a> page.</p>
     </div>
   )
 }
@@ -183,14 +185,15 @@ function PriceView({ result }: { result: PriceResult }) {
           </h2>
         </div>
       </div>
-      <p className="note">In cross-validation, 8 in 10 listings were priced between {Math.round(100 * main.low_kzt / main.price_kzt)}% and {Math.round(100 * main.high_kzt / main.price_kzt)}% of the predicted price: here <b>{kzt(main.low_kzt)}</b> to <b>{kzt(main.high_kzt)}</b>.</p>
+      <p className="plain"><b>{kzt(main.price_kzt)} ± {kzt(main.cv_mae_kzt)}</b>: the model is usually off by about {kzt(main.cv_mae_kzt)} (about {Math.round(main.cv_mape * 100)}% of the price).</p>
+      <p className="plain">8 in 10 similar listings cost between <b>{kzt(main.low_kzt)}</b> and <b>{kzt(main.high_kzt)}</b>.</p>
+      {result.name_note && <p className="note">Name not used: {result.name_note} The estimate uses the specifications only.</p>}
       <dl className="facts">
-        {result.with_name && <div><dt>Specifications only</dt><dd>{kzt(result.specs_only.price_kzt)}</dd></div>}
+        {result.with_name && <div><dt>From the specifications only</dt><dd>{kzt(result.specs_only.price_kzt)}</dd></div>}
         {result.with_name && <div><dt>The name changed it by</dt><dd>{(100 * (result.with_name.price_kzt / result.specs_only.price_kzt - 1)).toFixed(0)}%</dd></div>}
-        <div><dt>Grouped CV error</dt><dd>{kzt(main.cv_mae_kzt)} MAE · {(main.cv_mape * 100).toFixed(0)}% MAPE</dd></div>
         <div><dt>Model</dt><dd>{main.model}</dd></div>
       </dl>
-      <p className="fine">Trained on one store (mebel.kz, Almaty) with prices from one day in October 2026. The name adds fabric and mechanism words that the specifications do not record.</p>
+      <p className="fine">Learned from one store (mebel.kz, Almaty), prices from one day in October 2026. The name adds fabric and mechanism words that the size table does not record. Technical scores: grouped cross-validation MAE {Math.round(main.cv_mae_kzt).toLocaleString('en')} KZT, MAPE {(main.cv_mape * 100).toFixed(1)}%. Details on the <a href="/how">How it works</a> page.</p>
     </div>
   )
 }
@@ -202,6 +205,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
   const [form, setForm] = useState<FormState>(INITIAL)
   const [touched, setTouched] = useState(false)
   const [useSpecs, setUseSpecs] = useState(false)
+  const [usePrice, setUsePrice] = useState(true)
   const [photo, setPhoto] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
   const [result, setResult] = useState<Prediction | null>(null)
@@ -213,17 +217,20 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
 
   const needsSpecs = mode !== 'photo' || useSpecs
-  const fields: NumericKey[] = mode === 'specs' ? ['width_cm', 'depth_cm', 'height_cm', 'price_kzt'] : mode === 'price' ? ['width_cm', 'depth_cm', 'height_cm'] : ['width_cm', 'depth_cm', 'height_cm', 'weight_kg']
+  const fields: NumericKey[] = mode === 'specs' ? (usePrice ? ['width_cm', 'depth_cm', 'height_cm', 'price_kzt'] : ['width_cm', 'depth_cm', 'height_cm']) : mode === 'price' ? ['width_cm', 'depth_cm', 'height_cm'] : ['width_cm', 'depth_cm', 'height_cm', 'weight_kg']
   const errors = Object.fromEntries(fields.map((k) => [k, checkNumber(k, form[k])])) as Record<NumericKey, string>
   const nameError = form.name.trim().length > MAX_NAME ? `The name must be at most ${MAX_NAME} characters.` : ''
   const specsValid = (!needsSpecs || fields.every((k) => !errors[k])) && (mode !== 'price' || !nameError)
 
   const clear = () => { setResult(null); setPriceResult(null); setError('') }
-  const changeMode = (next: Mode) => { setMode(next); setTouched(false); clear() }
+  const changeMode = (next: Mode) => {
+    setMode(next); setTouched(false); clear()
+    if (next === 'price') setForm((c) => ({ ...c, materials: c.materials.filter((m) => PRICE_MATERIALS.includes(m)) }))
+  }
   const setNumber = (k: NumericKey, v: string) => { setForm((c) => ({ ...c, [k]: v })); setTouched(true); setResult(null); setPriceResult(null) }
   const toggleMaterial = (m: string) => { setForm((c) => ({ ...c, materials: c.materials.includes(m) ? c.materials.filter((x) => x !== m) : [...c.materials, m] })); setResult(null); setPriceResult(null) }
   const applyExample = (values: Partial<FormState>) => { setForm((c) => ({ ...c, ...values })); setTouched(false); clear() }
-  const resetAll = () => { setForm(INITIAL); setPhoto(null); setUseSpecs(false); setTouched(false); clear() }
+  const resetAll = () => { setForm(INITIAL); setPhoto(null); setUseSpecs(false); setUsePrice(true); setTouched(false); clear() }
 
   function takeFile(next: File | null) {
     clear()
@@ -256,7 +263,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             width_cm: Number(form.width_cm), depth_cm: Number(form.depth_cm), height_cm: Number(form.height_cm),
-            price_kzt: Number(form.price_kzt), materials: form.materials, main_color: form.main_color,
+            price_kzt: usePrice ? Number(form.price_kzt) : null, materials: form.materials, main_color: form.main_color,
           }),
         })
       } else {
@@ -343,7 +350,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
                 </label>
               )}
               <label className="switch-row">
-                <span><strong>Add specifications</strong><small>Photo + sizes scored 0.794 vs 0.766 for the photo alone.</small></span>
+                <span><strong>Add specifications</strong><small>Sizes, weight and materials help a little: 85 instead of 84 out of 100 on Amazon listings it never saw.</small></span>
                 <input type="checkbox" checked={useSpecs} onChange={(e) => { setUseSpecs(e.target.checked); clear() }} />
                 <i aria-hidden="true" />
               </label>
@@ -384,16 +391,24 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
               </section>
 
               {mode !== 'price' && <section className="step">
-                <header><span className="step-no">{num()}</span><h3>{mode === 'specs' ? 'Price' : 'Weight'}</h3><p>{mode === 'specs' ? 'The listed price in tenge.' : 'Shipping weight in kilograms.'}</p></header>
+                <header><span className="step-no">{num()}</span><h3>{mode === 'specs' ? 'Price' : 'Weight'}</h3><p>{mode === 'specs' ? 'Optional. The listed price in tenge.' : 'Shipping weight in kilograms.'}</p></header>
+                {mode === 'specs' && (
+                  <label className="switch-row">
+                    <span><strong>I know the listed price</strong><small>Without it, a model that uses only sizes, materials and colour answers instead.</small></span>
+                    <input type="checkbox" checked={usePrice} onChange={(e) => { setUsePrice(e.target.checked); clear() }} />
+                    <i aria-hidden="true" />
+                  </label>
+                )}
                 {mode === 'specs'
-                  ? <RulerField field="price_kzt" value={form.price_kzt} error={touched ? errors.price_kzt : ''} onChange={setNumber} />
+                  ? usePrice && <RulerField field="price_kzt" value={form.price_kzt} error={touched ? errors.price_kzt : ''} onChange={setNumber} />
                   : <RulerField field="weight_kg" value={form.weight_kg} error={touched ? errors.weight_kg : ''} onChange={setNumber} />}
               </section>}
 
               <section className="step">
-                <header><span className="step-no">{num()}</span><h3>Materials</h3><p>{form.materials.length ? `${form.materials.length} selected` : 'None selected: the model will treat every material as absent.'}</p></header>
+                <header><span className="step-no">{num()}</span><h3>Materials</h3><p>{form.materials.length ? `${form.materials.length} selected` : 'None selected: the model will treat every material as absent.'}{mode === 'price' && ' Foam is not offered here: no mebel.kz listing in the price data records it.'}</p></header>
                 <div className="swatches">
                   {MATERIALS.map((key, index) => {
+                    if (mode === 'price' && !PRICE_MATERIALS.includes(key)) return null
                     const on = form.materials.includes(key)
                     return (
                       <button type="button" key={key} className={on ? 'on' : ''} aria-pressed={on} onClick={() => toggleMaterial(key)}>
@@ -456,7 +471,7 @@ export default function PredictPage({ status }: { status: ModelStatus }) {
               {!loading && !error && priceResult && <PriceView key={JSON.stringify(priceResult)} result={priceResult} />}
               {!loading && !error && !result && !priceResult && (
                 <p className="idle">{mode === 'price'
-                  ? <>Set the details on the left and press <b>Predict</b>. The answer is an expected price with the range the model usually stays within.</>
+                  ? <>Set the details on the left and press <b>Predict</b>. You get a typical price for this description, how far off the model usually is, and the range most similar listings fall into.</>
                   : <>Set the details on the left and press <b>Predict</b>. The answer appears here with the model's confidence across all nine types.</>}</p>
               )}
             </div>

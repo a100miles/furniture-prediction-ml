@@ -1,15 +1,15 @@
 <section id="photos" class="dark">
 <div class="head">
 <p class="eyebrow">Photos, on a second marketplace</p>
-<h2>Where the sizes fail, a pretrained photo model helps</h2>
+<h2>Where the sizes fail, a better pretrained photo model helps most</h2>
 </div>
 <div class="cards four">
 <div class="card" style="--i: 0;"><p class="num" style="font-size: 80px;">0.662</p><p class="cap">specifications only</p></div>
 <div class="card" style="--i: 1;"><p class="num" style="font-size: 80px;">0.605</p><p class="cap">small CNN trained from scratch</p></div>
-<div class="card" style="--i: 2;"><p class="num" style="font-size: 80px;">0.766</p><p class="cap">frozen ResNet-18 + logistic regression</p></div>
-<div class="card" style="--i: 3;"><p class="num" style="font-size: 80px;">0.794</p><p class="cap">specs + photo</p></div>
+<div class="card" style="--i: 2;"><p class="num" style="font-size: 80px;">0.766</p><p class="cap">frozen ResNet-18 (fine-tuned: 0.789; CLIP: 0.801)</p></div>
+<div class="card" style="--i: 3;"><p class="num" style="font-size: 80px;">0.851</p><p class="cap">frozen DINOv2 + specs (photo alone 0.844)</p></div>
 </div>
-<p class="lead" style="width: 1560px;">Type macro-F1, grouped 5-fold CV on 3,332 Amazon (ABO) listings. TV-stand recall rises from 0.08 to 0.64 with the photo. These are other products and they have no price, so this tests the Endterm photo hypothesis, not the price.</p>
-<div class="foot"><p>final.ipynb, section 5 · photos: Amazon.com, CC BY 4.0</p><p class="pg"></p></div>
-<aside>Tamerlan (about 45 seconds). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662, and TV stands go from almost never found to mostly found. Our own small CNN, trained from scratch on about 2,700 products, underfits at 0.605. This is on other products, without price.</aside>
+<p class="lead" style="width: 1560px;">Type macro-F1, grouped 5-fold CV on 3,332 Amazon (ABO) listings. TV-stand recall: 0.08 with specs, 0.78 with DINOv2 + specs. On <b>221 IKEA photos never seen</b>, DINOv2 still scores 0.880 (ResNet-18 0.755). Other products, no price: this tests the Endterm photo hypothesis, not the price.</p>
+<div class="foot"><p>final.ipynb, sections 5, 5.6, 5.7 · photos: Amazon.com, CC BY 4.0; IKEA.com, non-commercial</p><p class="pg"></p></div>
+<aside>Tamerlan (about 1 minute). Our Endterm plan was photos for the case furniture. mebel.kz photos are not allowed, so we tested the idea on Amazon Berkeley Objects, which is CC BY 4.0. On the same Amazon listings, a frozen ResNet-18 beats the specifications, 0.766 versus 0.662. Our own small CNN, trained from scratch, underfits at 0.605. After the survey we tried stronger models on the same folds: fine-tuning ResNet-18 gives 0.789, CLIP 0.801, and a frozen DINOv2 0.844, or 0.851 with the specifications; TV stands go from 8 to 78 percent found. A better pretrained encoder helped more than training a weaker one further. DINOv2 also recognised IKEA photos it had never seen, 0.880. This is on other products, without price.</aside>
 </section>

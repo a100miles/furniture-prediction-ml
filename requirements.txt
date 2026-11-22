@@ -26,3 +26,5 @@ transformers==5.24.0
 huggingface-hub==2.4.0
 tokenizers==0.23.3
 safetensors==0.8.0
+# Final, after the survey: gradient-boosted trees for price (CLIP / DINOv2 weights come through transformers above)
+lightgbm==4.7.0
