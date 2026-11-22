@@ -38,7 +38,7 @@ Team: Sultanbek Zhumagali, Tamerlan Yessimov (SE-2420).
 | `data/external/` | ABO image index, licence and photos; IKEA SA raw file; IKEA photos (none in the submission archive; re-download with the scraper scripts). |
 | `data/cache/` | ResNet-18, CLIP and DINOv2 features, the cross-validated ABO predictions and the name embeddings (re-created when deleted). |
 | `CHANGES.md`, `DATA_CARD.md`, `CONTRIBUTIONS.md` | Change log, data sources and licences, who did what and AI use. |
-| `Furniture Final Slides.pdf`, `slides/` | Final slides (11, about 9 minutes with the demo). `slides/Furniture Final Slides.html` opens in a browser (arrow keys); `slides/speaker-notes.md` has who says what; `slides/final/` holds the slide sources, rebuilt with `tools/build_slides.py --pdf`. |
+| `Furniture Final Slides.pdf`, `slides/` | Final slides (13, about 10 minutes with the demo). `slides/Furniture Final Slides.html` opens in a browser (arrow keys); `slides/speaker-notes.md` has who says what; `slides/final/` holds the slide sources, rebuilt with `tools/build_slides.py --pdf`. |
 | `endterm.ipynb`, `furniture_classification.ipynb` | Endterm and Midterm notebooks, unchanged. |
 
 ## Run

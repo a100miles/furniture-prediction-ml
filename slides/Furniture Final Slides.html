@@ -73,6 +73,14 @@ tr.hl { background: #F1DCCB; }
 @keyframes grow { from { opacity: 0; transform: translate(-40px, 0px); } to { opacity: 1; transform: translate(0px, 0px); } }
 .bar-row { animation: grow .6s ease both; animation-delay: calc(var(--i, 0) * 110ms); }
 
+table.algo { border-collapse: collapse; font-size: 25px; line-height: 1.3; }
+table.algo th { text-align: left; font-size: 20px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--clay); padding: 0 18px 14px; border-bottom: 2px solid var(--rule); }
+table.algo td { vertical-align: top; padding: 18px; border-bottom: 1px solid var(--rule); }
+table.algo td:first-child { padding-left: 0; } table.algo th:first-child { padding-left: 0; }
+table.algo tr.hl td:first-child { padding-left: 12px; }
+table.algo .sm { font-size: 21px; color: var(--soft); }
+.card .step { font-family: 'Rubik', Arial, sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--clay); }
+
 
 html, body { margin: 0; padding: 0; background: #111; }
 section { position: relative; width: 1920px; height: 1080px; overflow: hidden; margin: 0 auto 24px; }
@@ -151,6 +159,37 @@ aside { display: none; }
 </div>
 <div class="foot"><p>DATA_CARD.md; final.ipynb, section 3</p><p class="pg"></p></div>
 <aside>Tamerlan (about 1 minute). The store’s copyright notice covers photos and page text, so we use neither. Product names are short factual labels, like the sizes, and they belong to exactly the same listings, so they give us a second source on the same test objects. Amazon Berkeley Objects is CC BY 4.0, but it is other products without price, so we use it only for the type. The split is the same as since the Midterm: 793 test listings, 92 designs, groups keep colour variants together, seed 42.</aside>
+</section>
+<section id="models">
+<div class="head">
+<p class="eyebrow">Algorithms and models</p>
+<h2>Four questions, every model family compared</h2>
+</div>
+<table class="algo">
+<tr><th style="width: 19%;">Question · input</th><th style="width: 43%;">Algorithms compared</th><th style="width: 18%;">Chosen by CV</th><th style="width: 20%;">Score</th></tr>
+<tr><td><b>Type</b> · sizes, materials, colour</td><td>Dummy baseline, decision tree, KNN, SVM (RBF kernel), random forest, gradient boosting (HistGB), MLP neural net (128, 64)</td><td>SVM<br><span class="sm">C = 3, γ = 0.1</span></td><td>macro-F1 0.949 CV<br><span class="sm">0.974 test</span></td></tr>
+<tr><td><b>Price</b> · specifications</td><td>Median of the type, ridge regression, random forest, HistGB, SVR, LightGBM</td><td>LightGBM<br><span class="sm">boosted trees</span></td><td>MAE 60,600 ₸ CV<br><span class="sm">MAPE 22.1% test</span></td></tr>
+<tr class="hl"><td><b>Price</b> · specs + product name</td><td>Ridge and SVR on our own TF-IDF (words 1–2, characters 2–5) vs on a pretrained encoder (multilingual-e5-small, 384-d)</td><td>SVR + TF-IDF</td><td>MAE 59,100 ₸ CV<br><span class="sm">MAPE 20.6% test</span></td></tr>
+<tr><td><b>Type</b> · photo (Amazon ABO)</td><td>Small CNN from scratch; frozen ResNet-18, CLIP ViT-B/32, DINOv2 ViT-S/14 + logistic regression; fine-tuned ResNet-18</td><td>DINOv2 + specs<br><span class="sm">logistic regression</span></td><td>macro-F1 0.851 CV<br><span class="sm">0.880 on IKEA photos</span></td></tr>
+</table>
+<p class="body">Type is classification (scored by macro-F1); price is regression on log price (scored by MAE in tenge and MAPE). Unsupervised steps from the Endterm: PCA and k-means clustering.</p>
+<div class="foot"><p>final.ipynb, sections 1.4, 1.6, 5.4, 5.6 and 7</p><p class="pg"></p></div>
+<aside>Sultanbek (about 45 seconds). This is the whole model zoo on one slide. For the type we compared seven classifiers, from a dummy baseline and a decision tree to an SVM, random forest, gradient boosting and a small neural network; the SVM won in cross-validation. For the price, six regressors on the specifications; LightGBM, a boosted-trees library, was best. Then the same regressors with the product name, either as our own TF-IDF word and character pieces or as vectors from a pretrained multilingual encoder; an SVR on our TF-IDF features won. For photos, a small CNN we trained ourselves against three pretrained networks, ResNet-18, CLIP and DINOv2, used frozen with a logistic regression on top, plus a fine-tuned ResNet-18. DINOv2 won.</aside>
+</section>
+<section id="method">
+<div class="head">
+<p class="eyebrow">Method</p>
+<h2>The same recipe for every model</h2>
+</div>
+<div class="cards four">
+<div class="card" style="--i: 0;"><p class="step">1</p><h3>Preprocessing</h3><p class="cap">Sizes scaled (StandardScaler); colour and type one-hot; 16 material flags. Price as log. Name as TF-IDF or e5 vectors; photo as a frozen network’s vector (384–512 numbers).</p></div>
+<div class="card" style="--i: 1;"><p class="step">2</p><h3>Split</h3><p class="cap">793 test listings (92 designs) locked away since the Midterm. Colour variants of one design always stay together (groups). Seed 42.</p></div>
+<div class="card" style="--i: 2;"><p class="step">3</p><h3>Tuning</h3><p class="cap">Stratified grouped 5-fold CV. GridSearchCV or RandomizedSearchCV inside one sklearn Pipeline, so nothing leaks from the folds. Pick by CV mean, then one test run.</p></div>
+<div class="card" style="--i: 3;"><p class="step">4</p><h3>Checks</h3><p class="cap">Per-class precision, recall and PR-AUC; design names masked; six fold seeds; outside tests on Amazon, IKEA Saudi Arabia and IKEA photos.</p></div>
+</div>
+<p class="lead" style="width: 1600px;">Libraries: scikit-learn, LightGBM, PyTorch / torchvision, Hugging Face transformers, sentence-transformers. The chosen models are saved with joblib and served by the app (Starlette API + React).</p>
+<div class="foot"><p>final.ipynb, sections 0, 1.3, 1.6, 7 and 8; furniture/price.py</p><p class="pg"></p></div>
+<aside>Tamerlan (about 40 seconds). Every model goes through the same recipe. Sizes are scaled, colour and type one-hot encoded, the price is predicted on a log scale, the name becomes TF-IDF or embedding vectors and a photo becomes the vector of a frozen network. The 793 test listings are locked away, and all colours of one design stay on the same side. Settings are searched with grouped 5-fold cross-validation inside one pipeline, the winner is picked by its CV mean and runs on the test set once. Then we check per-class scores, leakage through design names, other fold seeds and other stores.</aside>
 </section>
 <section id="type">
 <div class="head">

@@ -1,0 +1,15 @@
+<section id="method">
+<div class="head">
+<p class="eyebrow">Method</p>
+<h2>The same recipe for every model</h2>
+</div>
+<div class="cards four">
+<div class="card" style="--i: 0;"><p class="step">1</p><h3>Preprocessing</h3><p class="cap">Sizes scaled (StandardScaler); colour and type one-hot; 16 material flags. Price as log. Name as TF-IDF or e5 vectors; photo as a frozen network’s vector (384–512 numbers).</p></div>
+<div class="card" style="--i: 1;"><p class="step">2</p><h3>Split</h3><p class="cap">793 test listings (92 designs) locked away since the Midterm. Colour variants of one design always stay together (groups). Seed 42.</p></div>
+<div class="card" style="--i: 2;"><p class="step">3</p><h3>Tuning</h3><p class="cap">Stratified grouped 5-fold CV. GridSearchCV or RandomizedSearchCV inside one sklearn Pipeline, so nothing leaks from the folds. Pick by CV mean, then one test run.</p></div>
+<div class="card" style="--i: 3;"><p class="step">4</p><h3>Checks</h3><p class="cap">Per-class precision, recall and PR-AUC; design names masked; six fold seeds; outside tests on Amazon, IKEA Saudi Arabia and IKEA photos.</p></div>
+</div>
+<p class="lead" style="width: 1600px;">Libraries: scikit-learn, LightGBM, PyTorch / torchvision, Hugging Face transformers, sentence-transformers. The chosen models are saved with joblib and served by the app (Starlette API + React).</p>
+<div class="foot"><p>final.ipynb, sections 0, 1.3, 1.6, 7 and 8; furniture/price.py</p><p class="pg"></p></div>
+<aside>Tamerlan (about 40 seconds). Every model goes through the same recipe. Sizes are scaled, colour and type one-hot encoded, the price is predicted on a log scale, the name becomes TF-IDF or embedding vectors and a photo becomes the vector of a frozen network. The 793 test listings are locked away, and all colours of one design stay on the same side. Settings are searched with grouped 5-fold cross-validation inside one pipeline, the winner is picked by its CV mean and runs on the test set once. Then we check per-class scores, leakage through design names, other fold seeds and other stores.</aside>
+</section>
