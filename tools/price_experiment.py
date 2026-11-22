@@ -3,7 +3,7 @@
 Same 793 test listings, same build_groups, training twins of test groups removed, StratifiedGroupKFold(5)
 stratified on type, seed 42. Prints the CV and test table for every model.
 
-Run: .venv/bin/python tools/price_experiment.py
+Run: .venv/bin/python tools/price_experiment.py [--lightgbm-name]
 """
 import sys
 import time
@@ -23,8 +23,12 @@ from furniture.features import add_features, build_groups, material_columns  # n
 from furniture.price import (SIZE_NUM, CATEGORICAL, e5_embed, price_metrics, spec_prep, specs_embedding_prep,  # noqa: E402
                              specs_text_prep, text_column)
 
+from lightgbm import LGBMRegressor  # noqa: E402
+
 warnings.filterwarnings("ignore")
 RANDOM_STATE = 42
+LGB_GRID = {"model__learning_rate": [0.03, 0.06], "model__num_leaves": [15, 31], "model__min_child_samples": [10, 30],
+            "model__colsample_bytree": [0.3, 0.7]}
 
 
 def load():
@@ -64,6 +68,8 @@ def main():
         "boosting, specs": (Pipeline([("prep", spec_prep(mats)), ("model", HistGradientBoostingRegressor(random_state=RANDOM_STATE))]),
                             {"model__learning_rate": [0.05, 0.1], "model__max_leaf_nodes": [15, 31],
                              "model__min_samples_leaf": [10, 30]}),
+        "LightGBM, specs": (Pipeline([("prep", spec_prep(mats)), ("model", LGBMRegressor(
+            n_estimators=600, random_state=RANDOM_STATE, n_jobs=-1, verbose=-1))]), LGB_GRID),
         "ridge, specs + TF-IDF name": (Pipeline([("prep", specs_text_prep(mats, "text")), ("model", Ridge())]), alphas),
         "ridge, specs + TF-IDF masked name": (Pipeline([("prep", specs_text_prep(mats, "text_masked")), ("model", Ridge())]), alphas),
         "ridge, specs + e5 name": (Pipeline([("prep", specs_embedding_prep(mats, E("text"))), ("model", Ridge())]),
@@ -71,6 +77,9 @@ def main():
         "ridge, specs + e5 masked name": (Pipeline([("prep", specs_embedding_prep(mats, E("text_masked"))), ("model", Ridge())]),
                                           {"model__alpha": [3, 10, 30, 100, 300]}),
     }
+    if "--lightgbm-name" in sys.argv:   # about 2 hours on CPU (thousands of sparse TF-IDF columns); CV MAE 62,167, test 56,391
+        models["LightGBM, specs + TF-IDF name"] = (Pipeline([("prep", specs_text_prep(mats, "text")), ("model", LGBMRegressor(
+            n_estimators=600, random_state=RANDOM_STATE, n_jobs=-1, verbose=-1))]), LGB_GRID)
     rows = []
     med_type = train.groupby("furniture_type")["price_kzt"].median()
     oof = np.log(train["furniture_type"].map(

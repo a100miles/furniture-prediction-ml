@@ -1,0 +1,222 @@
+path,article,furniture_type,label_from,ok,in_ikea_sa
+images/bed/001.024.52.jpg,001.024.52,bed,folder,True,False
+images/bed/001.626.34.jpg,001.626.34,bed,folder,True,False
+images/bed/002.287.05.jpg,002.287.05,bed,folder,True,True
+images/bed/002.392.33.jpg,002.392.33,bed,folder,True,False
+images/bed/002.500.46.jpg,002.500.46,bed,folder,True,False
+images/bed/002.566.80.jpg,002.566.80,bed,folder,True,False
+images/bed/003.188.81.jpg,003.188.81,bed,folder,True,False
+images/bed/090.319.12.jpg,090.319.12,bed,folder,True,False
+images/bed/101.626.43.jpg,101.626.43,bed,folder,True,False
+images/bed/102.902.40.jpg,102.902.40,bed,folder,True,False
+images/bed/102.963.60.jpg,102.963.60,bed,folder,True,False
+images/bed/190.024.38.jpg,190.024.38,bed,folder,True,False
+images/bed/190.265.47.jpg,190.265.47,bed,folder,True,False
+images/bed/201.626.47.jpg,201.626.47,bed,folder,True,False
+images/bed/202.312.26.jpg,202.312.26,bed,folder,True,False
+images/bed/202.479.82.jpg,202.479.82,bed,folder,True,False
+images/bed/202.500.50.jpg,202.500.50,bed,folder,True,False
+images/bed/202.692.43.jpg,202.692.43,bed,folder,True,False
+images/bed/202.743.48.jpg,202.743.48,bed,folder,True,False
+images/bed/203.063.87.jpg,203.063.87,bed,folder,True,False
+images/bed/290.486.62.jpg,290.486.62,bed,folder,True,False
+images/bed/291.239.58.jpg,291.239.58,bed,folder,True,False
+images/bed/302.287.18.jpg,302.287.18,bed,folder,True,False
+images/bed/390.024.18.jpg,390.024.18,bed,folder,True,False
+images/bed/390.314.68.jpg,390.314.68,bed,folder,True,False
+images/bed/390.416.60.jpg,390.416.60,bed,folder,True,False
+images/bed/390.612.76.jpg,390.612.76,bed,folder,True,False
+images/bed/402.494.71.jpg,402.494.71,bed,folder,True,False
+images/bed/490.022.72.jpg,490.022.72,bed,folder,True,False
+images/bed/490.024.32.jpg,490.024.32,bed,folder,True,False
+images/bed/490.460.68.jpg,490.460.68,bed,folder,True,False
+images/bed/500.803.15.jpg,500.803.15,bed,folder,True,False
+images/bed/590.066.46.jpg,590.066.46,bed,folder,True,False
+images/bed/590.612.75.jpg,590.612.75,bed,folder,True,False
+images/bed/602.611.22.jpg,602.611.22,bed,folder,True,False
+images/bed/602.825.15.jpg,602.825.15,bed,folder,True,False
+images/bed/690.272.95.jpg,690.272.95,bed,folder,True,False
+images/bed/690.698.98.jpg,690.698.98,bed,folder,True,False
+images/bed/701.917.70.jpg,701.917.70,bed,folder,True,False
+images/bed/702.420.86.jpg,702.420.86,bed,folder,True,False
+images/bed/703.057.00.jpg,703.057.00,bed,folder,True,False
+images/bed/703.363.82.jpg,703.363.82,bed,folder,True,False
+images/bed/790.226.93.jpg,790.226.93,bed,folder,True,False
+images/bed/801.917.55.jpg,801.917.55,bed,folder,True,False
+images/bed/802.312.28.jpg,802.312.28,bed,folder,True,False
+images/bed/802.480.21.jpg,802.480.21,bed,folder,True,False
+images/bed/802.538.09.jpg,802.538.09,bed,folder,True,False
+images/bed/802.845.18.jpg,802.845.18,bed,folder,True,False
+images/bed/803.007.16.jpg,803.007.16,bed,folder,True,False
+images/bed/890.022.70.jpg,890.022.70,bed,folder,True,False
+images/bed/891.300.17.jpg,891.300.17,bed,folder,True,False
+images/bed/891.567.76.jpg,891.567.76,bed,folder,True,False
+images/bed/901.963.14.jpg,901.963.14,bed,folder,True,False
+images/bed/902.290.17.jpg,902.290.17,bed,folder,True,False
+images/chair/001.530.69.jpg,001.530.69,chair,folder,True,False
+images/chair/001.652.13.jpg,001.652.13,chair,folder,True,False
+images/chair/002.110.88.jpg,002.110.88,chair,folder,True,True
+images/chair/002.224.40.jpg,002.224.40,chair,folder,True,False
+images/chair/002.387.14.jpg,002.387.14,chair,folder,True,False
+images/chair/002.460.78.jpg,002.460.78,chair,folder,True,True
+images/chair/003.015.26.jpg,003.015.26,chair,folder,True,False
+images/chair/090.066.63.jpg,090.066.63,chair,folder,True,False
+images/chair/100.998.97.jpg,100.998.97,chair,folder,True,False
+images/chair/101.150.67.jpg,101.150.67,chair,folder,True,False
+images/chair/101.168.49.jpg,101.168.49,chair,folder,True,False
+images/chair/101.746.41.jpg,101.746.41,chair,folder,True,False
+images/chair/102.191.78.jpg,102.191.78,chair,folder,True,True
+images/chair/102.335.32.jpg,102.335.32,chair,folder,True,False
+images/chair/102.604.60.jpg,102.604.60,chair,folder,True,False
+images/chair/103.064.39.jpg,103.064.39,chair,folder,True,False
+images/chair/103.203.41.jpg,103.203.41,chair,folder,True,False
+images/chair/103.262.77.jpg,103.262.77,chair,folder,True,False
+images/chair/190.310.06.jpg,190.310.06,chair,folder,True,False
+images/chair/191.278.10.jpg,191.278.10,chair,folder,True,False
+images/chair/198.850.43.jpg,198.850.43,chair,folder,True,False
+images/chair/201.150.38.jpg,201.150.38,chair,folder,True,False
+images/chair/202.013.33.jpg,202.013.33,chair,folder,True,False
+images/chair/202.016.82.jpg,202.016.82,chair,folder,True,False
+images/chair/202.085.27.jpg,202.085.27,chair,folder,True,True
+images/chair/202.396.80.jpg,202.396.80,chair,folder,True,False
+images/chair/202.396.99.jpg,202.396.99,chair,folder,True,False
+images/chair/202.800.33.jpg,202.800.33,chair,folder,True,False
+images/chair/202.927.76.jpg,202.927.76,chair,folder,True,False
+images/chair/290.066.95.jpg,290.066.95,chair,folder,True,False
+images/chair/301.165.51.jpg,301.165.51,chair,folder,True,False
+images/chair/302.249.04.jpg,302.249.04,chair,folder,True,False
+images/chair/302.332.44.jpg,302.332.44,chair,folder,True,False
+images/chair/302.625.28.jpg,302.625.28,chair,folder,True,False
+images/chair/302.882.36.jpg,302.882.36,chair,folder,True,False
+images/chair/303.270.68.jpg,303.270.68,chair,folder,True,False
+images/chair/390.108.90.jpg,390.108.90,chair,folder,True,False
+images/chair/391.278.09.jpg,391.278.09,chair,folder,True,False
+images/chair/391.505.88.jpg,391.505.88,chair,folder,True,False
+images/chair/399.030.41.jpg,399.030.41,chair,folder,True,False
+images/chair/400.441.96.jpg,400.441.96,chair,folder,True,False
+images/chair/401.536.99.jpg,401.536.99,chair,folder,True,False
+images/chair/401.822.44.jpg,401.822.44,chair,folder,True,False
+images/chair/402.096.15.jpg,402.096.15,chair,folder,True,False
+images/chair/402.177.95.jpg,402.177.95,chair,folder,True,False
+images/chair/402.288.12.jpg,402.288.12,chair,folder,True,False
+images/chair/402.753.42.jpg,402.753.42,chair,folder,True,False
+images/chair/402.805.17.jpg,402.805.17,chair,folder,True,False
+images/chair/402.808.43.jpg,402.808.43,chair,folder,True,True
+images/chair/490.473.41.jpg,490.473.41,chair,folder,True,False
+images/chair/490.904.81.jpg,490.904.81,chair,folder,True,False
+images/chair/490.912.49.jpg,490.912.49,chair,folder,True,False
+images/chair/491.295.82.jpg,491.295.82,chair,folder,True,False
+images/chair/498.984.35.jpg,498.984.35,chair,folder,True,False
+images/chair/500.583.76.jpg,500.583.76,chair,folder,True,True
+images/chair/501.784.11.jpg,501.784.11,chair,folder,True,False
+images/chair/502.345.82.jpg,502.345.82,chair,folder,True,False
+images/chair/502.400.31.jpg,502.400.31,chair,folder,True,True
+images/chair/502.595.01.jpg,502.595.01,chair,folder,True,False
+images/chair/502.675.58.jpg,502.675.58,chair,folder,True,False
+images/chair/502.954.72.jpg,502.954.72,chair,folder,True,True
+images/chair/503.056.16.jpg,503.056.16,chair,folder,True,False
+images/chair/590.335.55.jpg,590.335.55,chair,folder,True,False
+images/chair/590.483.97.jpg,590.483.97,chair,folder,True,False
+images/chair/591.278.08.jpg,591.278.08,chair,folder,True,True
+images/chair/598.501.07.jpg,598.501.07,chair,folder,True,False
+images/chair/601.963.58.jpg,601.963.58,chair,folder,True,False
+images/chair/602.178.22.jpg,602.178.22,chair,folder,True,False
+images/chair/602.460.80.jpg,602.460.80,chair,folder,True,True
+images/chair/602.470.51.jpg,602.470.51,chair,folder,True,True
+images/chair/603.347.36.jpg,603.347.36,chair,folder,True,False
+images/chair/690.335.45.jpg,690.335.45,chair,folder,True,False
+images/chair/690.473.40.jpg,690.473.40,chair,folder,True,False
+images/chair/701.032.50.jpg,701.032.50,chair,folder,True,True
+images/chair/702.068.04.jpg,702.068.04,chair,folder,True,False
+images/chair/702.381.88.jpg,702.381.88,chair,folder,True,False
+images/chair/702.535.41.jpg,702.535.41,chair,folder,True,False
+images/chair/702.790.70.jpg,702.790.70,chair,folder,True,False
+images/chair/790.066.93.jpg,790.066.93,chair,folder,True,False
+images/chair/790.462.60.jpg,790.462.60,chair,folder,True,False
+images/chair/791.278.07.jpg,791.278.07,chair,folder,True,False
+images/chair/801.638.04.jpg,801.638.04,chair,folder,True,False
+images/chair/802.017.40.jpg,802.017.40,chair,folder,True,False
+images/chair/802.251.66.jpg,802.251.66,chair,folder,True,False
+images/chair/802.340.19.jpg,802.340.19,chair,folder,True,False
+images/chair/802.396.82.jpg,802.396.82,chair,folder,True,False
+images/chair/802.671.37.jpg,802.671.37,chair,folder,True,True
+images/chair/890.066.83.jpg,890.066.83,chair,folder,True,False
+images/chair/890.417.09.jpg,890.417.09,chair,folder,True,False
+images/chair/891.278.02.jpg,891.278.02,chair,folder,True,False
+images/chair/900.954.28.jpg,900.954.28,chair,folder,True,True
+images/chair/901.011.13.jpg,901.011.13,chair,folder,True,False
+images/chair/902.142.85.jpg,902.142.85,chair,folder,True,False
+images/chair/902.177.93.jpg,902.177.93,chair,folder,True,False
+images/chair/902.396.67.jpg,902.396.67,chair,folder,True,False
+images/chair/902.530.74.jpg,902.530.74,chair,folder,True,False
+images/chair/902.535.35.jpg,902.535.35,chair,folder,True,False
+images/chair/902.639.02.jpg,902.639.02,chair,folder,True,False
+images/chair/902.642.18.jpg,902.642.18,chair,folder,True,False
+images/chair/902.675.56.jpg,902.675.56,chair,folder,True,False
+images/chair/902.874.13.jpg,902.874.13,chair,folder,True,False
+images/chair/903.200.97.jpg,903.200.97,chair,folder,True,False
+images/chair/903.347.30.jpg,903.347.30,chair,folder,True,False
+images/chair/991.278.06.jpg,991.278.06,chair,folder,True,False
+images/chair/991.278.11.jpg,991.278.11,chair,folder,True,False
+images/chair/991.506.46.jpg,991.506.46,chair,folder,True,False
+images/couch/002.729.20.jpg,002.729.20,sofa,folder,True,False
+images/couch/091.292.30.jpg,091.292.30,sofa,folder,True,False
+images/couch/091.302.38.jpg,091.302.38,sofa,folder,True,False
+images/couch/098.744.98.jpg,098.744.98,sofa,folder,True,False
+images/couch/190.114.33.jpg,190.114.33,sofa,folder,True,False
+images/couch/190.526.21.jpg,190.526.21,sofa,folder,True,False
+images/couch/191.297.91.jpg,191.297.91,sofa,folder,True,False
+images/couch/191.504.62.jpg,191.504.62,sofa,folder,True,False
+images/couch/203.062.93.jpg,203.062.93,sofa,folder,True,False
+images/couch/290.338.06.jpg,290.338.06,sofa,folder,True,False
+images/couch/290.338.11.jpg,290.338.11,sofa,folder,True,False
+images/couch/290.486.62.jpg,290.486.62,sofa,folder,True,False
+images/couch/291.614.03.jpg,291.614.03,sofa,folder,True,False
+images/couch/302.651.12.jpg,302.651.12,sofa,folder,True,False
+images/couch/390.067.94.jpg,390.067.94,sofa,folder,True,False
+images/couch/390.338.01.jpg,390.338.01,sofa,folder,True,False
+images/couch/391.109.84.jpg,391.109.84,sofa,folder,True,False
+images/couch/391.250.99.jpg,391.250.99,sofa,folder,True,False
+images/couch/391.504.42.jpg,391.504.42,sofa,folder,True,False
+images/couch/398.758.49.jpg,398.758.49,sofa,folder,True,False
+images/couch/590.337.20.jpg,590.337.20,sofa,folder,True,False
+images/couch/591.110.44.jpg,591.110.44,sofa,folder,True,False
+images/couch/591.249.99.jpg,591.249.99,sofa,folder,True,False
+images/couch/598.758.05.jpg,598.758.05,sofa,folder,True,False
+images/couch/601.985.93.jpg,601.985.93,sofa,folder,True,False
+images/couch/690.106.19.jpg,690.106.19,sofa,folder,True,False
+images/couch/690.203.31.jpg,690.203.31,sofa,folder,True,False
+images/couch/691.110.34.jpg,691.110.34,sofa,folder,True,False
+images/couch/691.249.46.jpg,691.249.46,sofa,folder,True,False
+images/couch/691.292.32.jpg,691.292.32,sofa,folder,True,False
+images/couch/702.450.56.jpg,702.450.56,sofa,folder,True,False
+images/couch/799.019.69.jpg,799.019.69,sofa,folder,True,False
+images/couch/802.788.57.jpg,802.788.57,sofa,folder,True,False
+images/couch/802.991.95.jpg,802.991.95,sofa,folder,True,False
+images/couch/803.007.16.jpg,803.007.16,sofa,folder,True,False
+images/couch/890.203.25.jpg,890.203.25,sofa,folder,True,False
+images/couch/891.872.40.jpg,891.872.40,sofa,folder,True,False
+images/couch/902.651.09.jpg,902.651.09,sofa,folder,True,False
+images/couch/903.007.25.jpg,903.007.25,sofa,folder,True,False
+images/couch/990.203.58.jpg,990.203.58,sofa,folder,True,False
+images/objects/002.981.28.jpg,002.981.28,wardrobe,IKEA SA item,True,True
+images/objects/102.696.96.jpg,102.696.96,wardrobe,IKEA SA item,True,True
+images/objects/202.290.11.jpg,202.290.11,chest_of_drawers,IKEA SA item,True,True
+images/objects/202.498.96.jpg,202.498.96,desk,IKEA SA item,True,True
+images/objects/202.708.02.jpg,202.708.02,chest_of_drawers,IKEA SA item,True,True
+images/objects/202.937.14.jpg,202.937.14,chest_of_drawers,IKEA SA item,True,True
+images/objects/203.057.07.jpg,203.057.07,wardrobe,IKEA SA item,True,True
+images/objects/302.990.70.jpg,302.990.70,desk,IKEA SA item,True,True
+images/objects/502.512.70.jpg,502.512.70,wardrobe,IKEA SA item,True,True
+images/objects/602.397.15.jpg,602.397.15,tv_stand,IKEA SA item,True,True
+images/objects/602.457.21.jpg,602.457.21,desk,IKEA SA item,True,True
+images/objects/602.610.37.jpg,602.610.37,desk,IKEA SA item,True,True
+images/objects/603.057.05.jpg,603.057.05,chest_of_drawers,IKEA SA item,True,True
+images/objects/603.277.74.jpg,603.277.74,tv_stand,IKEA SA item,True,True
+images/objects/690.303.68.jpg,690.303.68,wardrobe,IKEA SA item,True,True
+images/objects/691.625.99.jpg,691.625.99,desk,IKEA SA item,True,True
+images/objects/702.453.39.jpg,702.453.39,desk,IKEA SA item,True,True
+images/objects/802.130.74.jpg,802.130.74,desk,IKEA SA item,True,True
+images/objects/802.290.08.jpg,802.290.08,wardrobe,IKEA SA item,True,True
+images/objects/902.696.97.jpg,902.696.97,wardrobe,IKEA SA item,True,True
+images/objects/902.782.77.jpg,902.782.77,desk,IKEA SA item,True,True
